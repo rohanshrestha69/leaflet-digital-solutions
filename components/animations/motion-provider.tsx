@@ -10,7 +10,7 @@ import { transition } from "@/lib/motion"
 export function MotionProvider({ children }: { children: ReactNode }) {
   return (
     <MotionConfig
-      reducedMotion="user"
+      // reducedMotion="user"
       transition={transition.default}
     >
       <ScrollProgress />

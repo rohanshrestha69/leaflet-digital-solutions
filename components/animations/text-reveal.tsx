@@ -51,9 +51,24 @@ type TextScrambleProps = {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Clip mask — extends the overflow box below the baseline so        */
+/*  descenders (g, y, p, j, q) and ascenders aren't sliced off.       */
+/*                                                                     */
+/*  - `pb-[0.2em]`        adds space *inside* the clipped region.     */
+/*  - `-mb-[0.2em]`       cancels the layout effect of that padding,  */
+/*                        keeping the surrounding flow visually pure. */
+/*  - `pt-[0.05em]`       prevents tall characters / italics from     */
+/*                        being clipped at the top during animation.  */
+/* ------------------------------------------------------------------ */
+
+const CLIP_MASK_CLASS =
+  "inline-block overflow-hidden align-bottom pt-[0.05em] pb-[0.2em] -mb-[0.2em]"
+
+const CLIP_MASK_BLOCK_CLASS =
+  "block overflow-hidden pt-[0.05em] pb-[0.2em] -mb-[0.2em]"
+
+/* ------------------------------------------------------------------ */
 /*  SplitWords                                                         */
-/*  Reveals each word by clipping upward from below its container.    */
-/*  Uses the overflow-hidden wrapper technique from eloqwnt.com.      */
 /* ------------------------------------------------------------------ */
 
 export function SplitWords({
@@ -78,7 +93,7 @@ export function SplitWords({
       {words.map((word, i) => (
         <span
           key={i}
-          className="inline-block overflow-hidden align-bottom"
+          className={CLIP_MASK_CLASS}
           aria-hidden
         >
           <motion.span
@@ -104,7 +119,6 @@ export function SplitWords({
 
 /* ------------------------------------------------------------------ */
 /*  SplitLines                                                         */
-/*  Reveals each line by clipping upward. Pass lines as an array.     */
 /* ------------------------------------------------------------------ */
 
 export function SplitLines({
@@ -128,7 +142,7 @@ export function SplitLines({
       {lines.map((line, i) => (
         <span
           key={i}
-          className={`block overflow-hidden${lineClass ? ` ${lineClass}` : ""}`}
+          className={`${CLIP_MASK_BLOCK_CLASS}${lineClass ? ` ${lineClass}` : ""}`}
         >
           <motion.span
             className="block"
@@ -150,8 +164,6 @@ export function SplitLines({
 
 /* ------------------------------------------------------------------ */
 /*  TextScramble                                                       */
-/*  Characters randomize before settling into the final string.       */
-/*  Ideal for mono / data-display labels.                             */
 /* ------------------------------------------------------------------ */
 
 export function TextScramble({
@@ -161,8 +173,8 @@ export function TextScramble({
   once  = true,
   speed = 28,
 }: TextScrambleProps) {
-  const ref     = useRef<HTMLSpanElement>(null)
-  const inView  = useInView(ref as React.RefObject<Element>, {
+  const ref    = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref as React.RefObject<Element>, {
     once,
     amount: 0.5,
   })
@@ -181,7 +193,7 @@ export function TextScramble({
           text
             .split("")
             .map((char, idx) => {
-              if (char === " ")         return " "
+              if (char === " ")        return " "
               if (idx < iteration / 3) return text[idx]!
               return CHARS[Math.floor(Math.random() * CHARS.length)]!
             })
