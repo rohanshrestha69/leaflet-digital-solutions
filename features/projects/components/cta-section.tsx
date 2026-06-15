@@ -1,4 +1,4 @@
-// components/shared/cta-section.tsx
+// features/projects/components/cta-section.tsx
 "use client"
 
 import Link from "next/link"
@@ -8,60 +8,82 @@ import { motion, type Variants } from "motion/react"
 import { buttonVariants } from "@/components/ui/button"
 import { Container } from "@/components/shared/container"
 import { InteractiveDots } from "@/components/ui/interactive-dots"
-import {
-  fadeUp,
-  fadeUpBlur,
-  popIn,
-  sectionStagger,
-  sectionViewport,
-} from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-/* ------------------------------------------------------------------ */
-/*  Types                                                               */
-/* ------------------------------------------------------------------ */
+/* ── Types ─────────────────────────────────────────────────────── */
 
 type CTAAction = {
-  label: string
-  href: string
+  label:    string
+  href:     string
   variant?: "orange" | "outlineDark"
   external?: boolean
 }
 
 type CTASectionProps = {
-  /** Small uppercase label above title — optional */
-  eyebrow?: string
-  /** Main heading — supports JSX for partial coloring */
-  title: React.ReactNode
-  /** Supporting copy beneath the heading */
+  eyebrow?:    string
+  title:       React.ReactNode
   description?: string
-  /** 1-2 action buttons */
-  actions?: CTAAction[]
-  /** Show the animated dot background */
-  withDots?: boolean
-  /** Center vs left-align the content */
-  align?: "center" | "left"
-  /** Override section id for anchor links */
-  id?: string
-  /** Vertical padding preset */
-  size?: "default" | "compact"
-  className?: string
+  actions?:    CTAAction[]
+  withDots?:   boolean
+  align?:      "center" | "left"
+  id?:         string
+  size?:       "default" | "compact"
+  className?:  string
 }
 
-/* ------------------------------------------------------------------ */
-/*  Motion                                                              */
-/* ------------------------------------------------------------------ */
+/* ── Variants ──────────────────────────────────────────────────── */
 
-const orchestrator: Variants = sectionStagger(0.1, 0.05)
-const eyebrowV: Variants = fadeUp(10, 0.45)
-const titleV: Variants = fadeUpBlur(24, 4, 0.65)
-const descV: Variants = fadeUp(14, 0.5)
-const buttonsV: Variants = sectionStagger(0.08, 0)
-const buttonV: Variants = popIn(0.96, 0.45)
+const orchestratorV: Variants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+}
 
-/* ------------------------------------------------------------------ */
-/*  Component                                                           */
-/* ------------------------------------------------------------------ */
+const eyebrowV: Variants = {
+  hidden: { opacity: 0, y: 10, filter: "blur(4px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: ease.out },
+  },
+}
+
+const titleV: Variants = {
+  hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.75, ease: ease.out },
+  },
+}
+
+const descV: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: ease.out },
+  },
+}
+
+const buttonsV: Variants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+}
+
+const buttonV: Variants = {
+  hidden: { opacity: 0, y: 12, scale: 0.96 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: ease.spring },
+  },
+}
+
+/* ── Component ─────────────────────────────────────────────────── */
 
 export function CTASection({
   eyebrow,
@@ -69,13 +91,12 @@ export function CTASection({
   description,
   actions = [],
   withDots = true,
-  align = "center",
+  align    = "center",
   id,
-  size = "default",
+  size     = "default",
   className,
 }: CTASectionProps) {
-  const padding =
-    size === "compact" ? "py-16 md:py-24" : "py-24 md:py-36"
+  const padding = size === "compact" ? "py-16 md:py-24" : "py-24 md:py-36"
 
   return (
     <section
@@ -98,23 +119,19 @@ export function CTASection({
       )}
 
       {/* Edge fades */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-32 bg-gradient-to-b from-[var(--background-deep)] to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-32 bg-gradient-to-t from-[var(--background-deep)] to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-24 bg-gradient-to-r from-[var(--background-deep)] to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-24 bg-gradient-to-l from-[var(--background-deep)] to-transparent"
-      />
-
+      {/* {(["top", "bottom", "left", "right"] as const).map((side) => (
+        <div
+          key={side}
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute z-[1]",
+            side === "top"    && "inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--background-deep)] to-transparent",
+            side === "bottom" && "inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--background-deep)] to-transparent",
+            side === "left"   && "inset-y-0 left-0 w-24 bg-gradient-to-r from-[var(--background-deep)] to-transparent",
+            side === "right"  && "inset-y-0 right-0 w-24 bg-gradient-to-l from-[var(--background-deep)] to-transparent",
+          )}
+        />
+      ))} */}
 
       <Container
         wide
@@ -124,30 +141,29 @@ export function CTASection({
         )}
       >
         <motion.div
-          variants={orchestrator}
+          variants={orchestratorV}
           initial="hidden"
-          whileInView="visible"
-          viewport={sectionViewport}
+          whileInView="show"
+          viewport={viewport.section}
           className={cn(
             "flex flex-col gap-6",
             align === "center" ? "items-center" : "items-start"
           )}
         >
-          {/* Eyebrow */}
           {eyebrow && (
             <motion.span
               variants={eyebrowV}
               className={cn(
                 "inline-flex items-center gap-2 rounded-full",
                 "border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm",
-                "px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-muted)]"
+                "px-3.5 py-1.5 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-muted)]"
               )}
             >
+              <span className="size-1.5 rounded-full bg-[var(--brand)]" />
               {eyebrow}
             </motion.span>
           )}
 
-          {/* Title */}
           <motion.h2
             variants={titleV}
             className={cn(
@@ -159,7 +175,6 @@ export function CTASection({
             {title}
           </motion.h2>
 
-          {/* Description */}
           {description && (
             <motion.p
               variants={descV}
@@ -172,7 +187,6 @@ export function CTASection({
             </motion.p>
           )}
 
-          {/* Actions */}
           {actions.length > 0 && (
             <motion.div
               variants={buttonsV}
@@ -190,13 +204,13 @@ export function CTASection({
                     className={cn(
                       buttonVariants({
                         variant: action.variant ?? "orange",
-                        size: "lg",
+                        size:    "lg",
                       }),
-                      "w-full sm:w-auto"
+                      "group w-full gap-2 sm:w-auto"
                     )}
                   >
                     {action.label}
-                    <ArrowUpRight className="size-4" />
+                    <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                 </motion.div>
               ))}

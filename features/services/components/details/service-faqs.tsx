@@ -1,6 +1,7 @@
+// features/services/components/details/service-faqs.tsx
 "use client"
 
-import { motion } from "motion/react"
+import { motion, type Variants } from "motion/react"
 
 import {
   Accordion,
@@ -11,22 +12,36 @@ import {
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import type { ServiceFaq } from "@/features/marketing/data/services-page"
-import { sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { itemVariants, sectionContainer } from "./service-variants"
+import { sectionV, itemBlurV } from "./service-variants"
+
+const listV: Variants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.05, delayChildren: 0.15 } },
+}
+
+const faqItemV: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: ease.out },
+  },
+}
 
 export function ServiceFAQs({ faqs }: { faqs: ServiceFaq[] }) {
   return (
     <section className="relative border-b border-[var(--border)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
           <motion.div
-            variants={itemVariants}
+            variants={itemBlurV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <SectionHeading>
@@ -35,20 +50,19 @@ export function ServiceFAQs({ faqs }: { faqs: ServiceFaq[] }) {
               asked questions.
             </SectionHeading>
             <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-muted)] md:text-right">
-              From timelines to revisions — quick answers to the things we hear most.
+              From timelines to revisions — quick answers to the things we hear
+              most.
             </p>
           </motion.div>
 
           <motion.div
-            variants={itemVariants}
+            variants={listV}
             className="mt-14 border-t border-[var(--border)] md:mt-20"
           >
             <Accordion>
-              {faqs.map((f, i) => {
-                const number = String(i + 1).padStart(2, "0")
-                return (
+              {faqs.map((f, i) => (
+                <motion.div key={f.question} variants={faqItemV}>
                   <AccordionItem
-                    key={f.question}
                     value={`item-${i}`}
                     className="border-b border-[var(--border)]"
                   >
@@ -59,8 +73,8 @@ export function ServiceFAQs({ faqs }: { faqs: ServiceFaq[] }) {
                         "hover:no-underline data-[state=open]:text-[var(--brand)]"
                       )}
                     >
-                      <span className="mt-1 font-mono text-[12px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
-                        {number}
+                      <span className="mt-1 font-medium text-[12px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="flex-1 font-heading text-[18px] font-semibold tracking-tight text-[var(--text)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)] md:text-[22px]">
                         {f.question}
@@ -70,8 +84,8 @@ export function ServiceFAQs({ faqs }: { faqs: ServiceFaq[] }) {
                       <p className="max-w-2xl">{f.answer}</p>
                     </AccordionContent>
                   </AccordionItem>
-                )
-              })}
+                </motion.div>
+              ))}
             </Accordion>
           </motion.div>
         </motion.div>

@@ -1,3 +1,4 @@
+// features/marketing/components/why-us-section.tsx
 "use client"
 
 import Link from "next/link"
@@ -8,67 +9,63 @@ import { buttonVariants } from "@/components/ui/button"
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { comparisonRows } from "@/features/marketing/data/comparison"
-import { premiumEase, sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
 /* -------------------------------------------------------------------------- */
 
-const sectionContainer: Variants = {
+const sectionV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
-  },
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
 }
 
-const headerVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+const headerV: Variants = {
+  hidden: { opacity: 0, y: 22, filter: "blur(3px)" },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: premiumEase },
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: ease.out },
   },
 }
 
-const tableVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
+const tableV: Variants = {
+  hidden: { opacity: 0, y: 26, scale: 0.98 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: premiumEase, delay: 0.15 },
+    scale: 1,
+    transition: { duration: 0.65, ease: ease.out, delay: 0.1 },
   },
 }
 
-const rowsContainer: Variants = {
+const rowsV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.25 },
-  },
+  show: { transition: { staggerChildren: 0.04, delayChildren: 0.2 } },
 }
 
-const rowVariants: Variants = {
+const rowV: Variants = {
   hidden: { opacity: 0, y: 12 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, ease: premiumEase },
+    transition: { duration: 0.45, ease: ease.out },
   },
 }
 
-const footerVariants: Variants = {
+const footerV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.1, delayChildren: 0.3 },
-  },
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.25 } },
 }
 
-const footerItemVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
+const footerItemV: Variants = {
+  hidden: { opacity: 0, y: 18 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: premiumEase },
+    transition: { duration: 0.6, ease: ease.out },
   },
 }
 
@@ -84,14 +81,14 @@ export function WhyUsSection() {
     >
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
           {/* Header */}
           <motion.div
-            variants={headerVariants}
+            variants={headerV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <SectionHeading>
@@ -107,41 +104,37 @@ export function WhyUsSection() {
 
           {/* Desktop table */}
           <motion.div
-            variants={tableVariants}
+            variants={tableV}
             className="mt-14 hidden overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] lg:block"
           >
-            {/* Header row */}
             <div className="grid grid-cols-4 border-b border-[var(--border)] bg-[var(--card)]/40 px-8 py-5">
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
                 Feature
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
                 Traditional Agency
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
                 Freelancers
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--brand)]">
+              <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)]">
                 Leaflet
               </span>
             </div>
 
-            {/* Body */}
-            <motion.div variants={rowsContainer}>
+            <motion.div variants={rowsV}>
               {comparisonRows.map((r) => (
                 <motion.div
                   key={r.feature}
-                  variants={rowVariants}
+                  variants={rowV}
                   className={cn(
                     "grid grid-cols-4 items-center gap-4 px-8 py-6 text-[14px]",
                     "border-b border-[var(--border)] last:border-b-0",
-                    "transition-colors duration-300 ease-[var(--ease-premium)]",
+                    "transition-[background-color] duration-300 ease-[var(--ease-premium)]",
                     "hover:bg-[var(--card)]/30"
                   )}
                 >
-                  <span className="font-medium text-[var(--text)]">
-                    {r.feature}
-                  </span>
+                  <span className="font-medium text-[var(--text)]">{r.feature}</span>
                   <Negative>{r.agency}</Negative>
                   <Negative>{r.freelancers}</Negative>
                   <Positive>{r.leaflet}</Positive>
@@ -151,30 +144,22 @@ export function WhyUsSection() {
           </motion.div>
 
           {/* Mobile cards */}
-          <motion.div
-            variants={rowsContainer}
-            className="mt-10 grid gap-4 lg:hidden"
-          >
+          <motion.div variants={rowsV} className="mt-10 grid gap-4 lg:hidden">
             {comparisonRows.map((r) => (
               <motion.div
                 key={r.feature}
-                variants={rowVariants}
+                variants={rowV}
                 className={cn(
                   "rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40 p-5",
-                  "transition-colors duration-300",
-                  "hover:border-[var(--border-strong)]"
+                  "transition-colors duration-300 hover:border-[var(--border-strong)]"
                 )}
               >
                 <h3 className="font-heading text-[18px] font-semibold text-[var(--text)]">
                   {r.feature}
                 </h3>
                 <div className="mt-4 flex flex-col gap-3 text-[13px]">
-                  <ComparisonLine label="Agency" negative>
-                    {r.agency}
-                  </ComparisonLine>
-                  <ComparisonLine label="Freelancers" negative>
-                    {r.freelancers}
-                  </ComparisonLine>
+                  <ComparisonLine label="Agency" negative>{r.agency}</ComparisonLine>
+                  <ComparisonLine label="Freelancers" negative>{r.freelancers}</ComparisonLine>
                   <ComparisonLine label="Leaflet">{r.leaflet}</ComparisonLine>
                 </div>
               </motion.div>
@@ -183,27 +168,25 @@ export function WhyUsSection() {
 
           {/* Footer block */}
           <motion.div
-            variants={footerVariants}
+            variants={footerV}
             className="mt-16 grid gap-10 md:mt-20 lg:grid-cols-2 lg:items-center lg:gap-16"
           >
-            <motion.div variants={footerItemVariants}>
+            <motion.div variants={footerItemV}>
               <h3 className="max-w-[440px] font-heading text-[28px] font-semibold leading-tight tracking-tight text-[var(--text)] md:text-[36px]">
                 What remote-first really means
               </h3>
               <p className="mt-6 max-w-[560px] text-[15px] leading-relaxed text-[var(--text-muted)] md:text-[16px]">
                 Without the physical constraints of an office, we access talent
                 traditional agencies can&apos;t reach. We work in your timezone,
-                follow your rhythm, and keep you in the loop with modern async
-                tools.
+                follow your rhythm, and keep you in the loop with modern async tools.
               </p>
             </motion.div>
 
             <motion.div
-              variants={footerItemVariants}
+              variants={footerItemV}
               className={cn(
                 "flex flex-col gap-8 rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40 p-8 md:p-10",
-                "transition-colors duration-300",
-                "hover:border-[var(--border-strong)]"
+                "transition-colors duration-300 hover:border-[var(--border-strong)]"
               )}
             >
               <blockquote className="font-heading text-[20px] font-medium leading-snug text-[var(--text)] md:text-[24px]">
@@ -280,15 +263,10 @@ function ComparisonLine({
         )}
       </span>
       <div className="flex flex-col gap-0.5">
-        <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--text-subtle)]">
+        <span className="font-medium text-[9px] uppercase tracking-[0.2em] text-[var(--text-subtle)]">
           {label}
         </span>
-        <span
-          className={cn(
-            "leading-snug",
-            negative ? "text-[var(--text-muted)]" : "text-[var(--text)]"
-          )}
-        >
+        <span className={cn("leading-snug", negative ? "text-[var(--text-muted)]" : "text-[var(--text)]")}>
           {children}
         </span>
       </div>

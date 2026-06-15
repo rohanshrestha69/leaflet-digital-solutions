@@ -1,3 +1,4 @@
+// features/projects/components/details/project-detail-challenges.tsx
 "use client"
 
 import { motion } from "motion/react"
@@ -5,22 +6,22 @@ import { motion } from "motion/react"
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import type { Project } from "@/features/marketing/data/projects-page"
-import { sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { sectionContainer, itemVariants } from "../project-variants"
+import { sectionV, itemV, itemBlurV } from "../project-variants"
 
 export function ProjectDetailChallenges({ project }: { project: Project }) {
   return (
     <section className="relative border-b border-[var(--border)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
           <motion.div
-            variants={itemVariants}
+            variants={itemBlurV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <SectionHeading>
@@ -28,7 +29,7 @@ export function ProjectDetailChallenges({ project }: { project: Project }) {
               <br />
               & solutions.
             </SectionHeading>
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--brand)] md:text-right">
+            <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)] md:text-right">
               02 / Approach
             </span>
           </motion.div>
@@ -58,17 +59,25 @@ function Block({
 }) {
   return (
     <motion.div
-      variants={itemVariants}
+      variants={itemV}
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
       className="grid gap-4 md:grid-cols-[180px_1fr] md:gap-12"
     >
-      <p
-        className={cn(
-          "font-mono text-[10px] uppercase tracking-[0.22em]",
-          accent ? "text-[var(--brand)]" : "text-[var(--text-subtle)]"
-        )}
-      >
-        {label}
-      </p>
+      <div className="flex items-start">
+        <motion.span
+          className={cn(
+            "inline-block font-medium text-[12px] uppercase tracking-[0.22em]",
+            accent ? "text-[var(--brand)]" : "text-[var(--text-subtle)]"
+          )}
+          initial={{ opacity: 0, x: -8 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, ease: ease.out }}
+        >
+          {label}
+        </motion.span>
+      </div>
       <p className="text-[16px] leading-relaxed text-[var(--text-muted)] md:text-[18px] md:leading-[1.7]">
         {body}
       </p>

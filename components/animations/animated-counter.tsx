@@ -1,142 +1,105 @@
+// components/animations/animated-counter.tsx
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
 
-type AnimatedCounterProps = {
-  value: string
-  duration?: number
-  className?: string
-  once?: boolean
-}
-
 type ParsedValue = {
-  prefix: string
-  suffix: string
-  target: number
+  prefix:   string
+  suffix:   string
+  target:   number
   decimals: number
 }
 
-function parseValue(value: string): ParsedValue | null {
+function parse(value: string): ParsedValue | null {
   if (!value) return null
-
-  // Match first valid number (supports commas + decimals)
   const match = value.match(/-?\d[\d,]*(\.\d+)?/)
   if (!match) return null
-
-  const raw = match[0]
+  const raw     = match[0]!
   const numeric = Number(raw.replace(/,/g, ""))
-
   if (!Number.isFinite(numeric)) return null
-
   const start = match.index ?? 0
-
   return {
-    prefix: value.slice(0, start),
-    suffix: value.slice(start + raw.length),
-    target: numeric,
-    decimals: raw.includes(".") ? raw.split(".")[1].length : 0,
+    prefix:   value.slice(0, start),
+    suffix:   value.slice(start + raw.length),
+    target:   numeric,
+    decimals: raw.includes(".") ? raw.split(".")[1]!.length : 0,
   }
 }
 
-function easeOutCubic(t: number) {
-  return 1 - Math.pow(1 - t, 3)
+function easeOutExpo(t: number): number {
+  return t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
+}
+
+type AnimatedCounterProps = {
+  value:     string
+  duration?: number
+  className?: string
+  once?:     boolean
 }
 
 export function AnimatedCounter({
   value,
-  duration = 1600,
+  duration = 1800,
   className,
-  once = true,
+  once     = true,
 }: AnimatedCounterProps) {
-  const ref = useRef<HTMLSpanElement | null>(null)
-  const frameRef = useRef<number | null>(null)
+  const ref       = useRef<HTMLSpanElement>(null)
+  const frameRef  = useRef<number | null>(null)
   const startedRef = useRef(false)
-
-  const parsed = useMemo(() => parseValue(value), [value])
-
-  const [displayValue, setDisplayValue] = useState(0)
+  const parsed    = useMemo(() => parse(value), [value])
+  const [display, setDisplay] = useState(0)
 
   useEffect(() => {
     if (!parsed || !ref.current) return
 
-    const element = ref.current
+    const el = ref.current
 
-    const animate = () => {
+    const run = () => {
       if (once && startedRef.current) return
-
       startedRef.current = true
-
       const start = performance.now()
 
-      const update = (time: number) => {
-        const elapsed = time - start
-        const progress = Math.min(elapsed / duration, 1)
-
-        const eased = easeOutCubic(progress)
-        const nextValue = parsed.target * eased
-
-        setDisplayValue(nextValue)
-
+      const tick = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1)
+        setDisplay(parsed.target * easeOutExpo(progress))
         if (progress < 1) {
-          frameRef.current = requestAnimationFrame(update)
+          frameRef.current = requestAnimationFrame(tick)
         } else {
-          setDisplayValue(parsed.target)
+          setDisplay(parsed.target)
         }
       }
-
-      frameRef.current = requestAnimationFrame(update)
+      frameRef.current = requestAnimationFrame(tick)
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
-          animate()
-
-          if (once) {
-            observer.disconnect()
-          }
+          run()
+          if (once) observer.disconnect()
         } else if (!once) {
           startedRef.current = false
         }
       },
-      {
-        threshold: 0.2,
-      }
+      { threshold: 0.2 },
     )
 
-    observer.observe(element)
-
+    observer.observe(el)
     return () => {
       observer.disconnect()
-
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current)
-      }
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
     }
   }, [parsed, duration, once])
 
-  if (!parsed) {
-    return (
-      <span ref={ref} className={className}>
-        {value}
-      </span>
-    )
-  }
+  if (!parsed) return <span ref={ref} className={className}>{value}</span>
 
   const formatted =
     parsed.decimals > 0
-      ? displayValue.toFixed(parsed.decimals)
-      : Math.round(displayValue).toLocaleString()
+      ? display.toFixed(parsed.decimals)
+      : Math.round(display).toLocaleString()
 
   return (
-    <span
-      ref={ref}
-      className={className}
-      aria-label={value}
-    >
-      {parsed.prefix}
-      {formatted}
-      {parsed.suffix}
+    <span ref={ref} className={className} aria-label={value}>
+      {parsed.prefix}{formatted}{parsed.suffix}
     </span>
   )
 }

@@ -1,63 +1,105 @@
 // features/services/components/services-testimonials.tsx
 "use client"
 
+import { useCallback, useMemo, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { motion } from "motion/react"
-import { useState, useCallback, useMemo } from "react"
+import { AnimatePresence, motion, type Variants } from "motion/react"
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/shared/container"
 import { servicesTestimonials } from "@/features/marketing/data/services-page"
-import {
-  fadeSlideX,
-  fadeUp,
-  fadeUpScale,
-  lineReveal,
-  sectionStagger,
-  sectionViewport,
-} from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-const orchestrator = sectionStagger(0.12, 0.04)
-const heading = fadeUp(24, 0.6)
-const controls = fadeSlideX(12, 0.45)
-const cardsGrid = sectionStagger(0.12, 0.15)
-const card = fadeUpScale(32, 0.97, 0.6)
-const border = lineReveal(0.7, 0)
-const quote = fadeUp(10, 0.45, 0.1)
-const caption = fadeUp(8, 0.4, 0.18)
+/* ── Variants ─────────────────────────────────────────────────── */
+
+const orchestratorV: Variants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+}
+
+const headingV: Variants = {
+  hidden: { opacity: 0, y: 22, filter: "blur(3px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: ease.out },
+  },
+}
+
+const controlsV: Variants = {
+  hidden: { opacity: 0, x: 12 },
+  show:   { opacity: 1, x: 0, transition: { duration: 0.5, ease: ease.smooth } },
+}
+
+const gridV: Variants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+}
+
+const cardV: Variants = {
+  hidden: { opacity: 0, y: 28, scale: 0.97 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: ease.out },
+  },
+}
+
+const borderV: Variants = {
+  hidden: { scaleX: 0 },
+  show: {
+    scaleX: 1,
+    transition: { duration: 0.7, ease: ease.inOut },
+  },
+}
+
+const quoteV: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: ease.smooth, delay: 0.1 },
+  },
+}
+
+const captionV: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: ease.smooth, delay: 0.18 },
+  },
+}
 
 const VISIBLE = 3
 
 export function ServicesTestimonials() {
   const [start, setStart] = useState(0)
-  const total = servicesTestimonials.length
+  const total    = servicesTestimonials.length
   const maxStart = Math.max(0, total - VISIBLE)
 
-  const visible = useMemo(() => {
-    return servicesTestimonials.slice(start, start + VISIBLE)
-  }, [start])
+  const visible = useMemo(
+    () => servicesTestimonials.slice(start, start + VISIBLE),
+    [start]
+  )
 
-  const prev = useCallback(
-    () => setStart((s) => Math.max(0, s - 1)),
-    []
-  )
-  const next = useCallback(
-    () => setStart((s) => Math.min(maxStart, s + 1)),
-    [maxStart]
-  )
+  const prev = useCallback(() => setStart((s) => Math.max(0, s - 1)), [])
+  const next = useCallback(() => setStart((s) => Math.min(maxStart, s + 1)), [maxStart])
 
   return (
     <section className="relative border-t border-[var(--border)] bg-[var(--background)] py-16 md:py-28">
       <Container wide>
         <motion.div
-          variants={orchestrator}
+          variants={orchestratorV}
           initial="hidden"
-          whileInView="visible"
-          viewport={sectionViewport}
+          whileInView="show"
+          viewport={viewport.section}
         >
           <motion.div
-            variants={heading}
+            variants={headingV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <h2
@@ -71,7 +113,7 @@ export function ServicesTestimonials() {
             </h2>
 
             {total > VISIBLE && (
-              <motion.div variants={controls} className="flex gap-3">
+              <motion.div variants={controlsV} className="flex gap-3">
                 <Button
                   variant="outlineDark"
                   size="icon-lg"
@@ -94,36 +136,40 @@ export function ServicesTestimonials() {
             )}
           </motion.div>
 
-          <motion.div
-            key={start} /* Re-trigger stagger on slide */
-            variants={cardsGrid}
-            initial="hidden"
-            animate="visible"
-            className="mt-10 grid gap-8 md:mt-12 md:grid-cols-3 md:gap-10"
-          >
-            {visible.map((t) => (
-              <motion.div key={`${t.name}-${start}`} variants={card}>
-                <figure className="transition-colors duration-300 ease-[var(--ease-premium)]">
-                  <motion.div
-                    variants={border}
-                    className="mb-7 h-px w-full origin-left bg-white/[0.08]"
-                  />
-                  <motion.blockquote
-                    variants={quote}
-                    className="text-sm leading-7 text-white/58"
-                  >
-                    {t.quote}
-                  </motion.blockquote>
-                  <motion.figcaption variants={caption} className="mt-9">
-                    <p className="text-base font-medium text-white">{t.name}</p>
-                    <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/38">
-                      {t.role}, {t.company}
-                    </p>
-                  </motion.figcaption>
-                </figure>
-              </motion.div>
-            ))}
-          </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={start}
+              variants={gridV}
+              initial="hidden"
+              animate="show"
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              className="mt-10 grid gap-8 md:mt-12 md:grid-cols-3 md:gap-10"
+            >
+              {visible.map((t) => (
+                <motion.div key={`${t.name}-${start}`} variants={cardV}>
+                  <figure>
+                    <motion.div
+                      variants={borderV}
+                      className="mb-7 h-px w-full bg-white/[0.08]"
+                      style={{ originX: 0 }}
+                    />
+                    <motion.blockquote
+                      variants={quoteV}
+                      className="text-sm leading-7 text-white/58"
+                    >
+                      &ldquo;{t.quote}&rdquo;
+                    </motion.blockquote>
+                    <motion.figcaption variants={captionV} className="mt-9">
+                      <p className="text-base font-medium text-white">{t.name}</p>
+                      <p className="mt-2 font-medium text-[12px] uppercase tracking-[0.18em] text-white/38">
+                        {t.role}, {t.company}
+                      </p>
+                    </motion.figcaption>
+                  </figure>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       </Container>
     </section>

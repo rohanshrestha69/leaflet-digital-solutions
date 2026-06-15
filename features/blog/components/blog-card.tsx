@@ -1,3 +1,4 @@
+// features/blog/components/blog-card.tsx
 "use client"
 
 import {
@@ -15,18 +16,13 @@ import {
   type BlogPost,
   getCategoryColor,
 } from "@/features/marketing/data/blog-data"
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { tileVariants } from "./blog-variants"
+import { tileV } from "./blog-variants"
 
 type BlogCardProps = {
   post: BlogPost
-  /**
-   * `default` — standard card for grids (4:3 image)
-   * `featured` — larger card with bigger heading and "Read article" CTA (16:10 image)
-   * `compact` — minimal horizontal layout for sidebar/side lists (no image)
-   */
   variant?: "default" | "featured" | "compact"
-  /** Prevent navigation when parent carousel is dragging */
   shouldPreventNavigation?: () => boolean
   className?: string
 }
@@ -37,7 +33,6 @@ export function BlogCard({
   shouldPreventNavigation,
   className,
 }: BlogCardProps) {
-  /* ----------------------------- Drag prevention ---------------------------- */
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const draggedRef = useRef(false)
 
@@ -74,18 +69,19 @@ export function BlogCard({
     [shouldPreventNavigation]
   )
 
-  /* Compact variant — no image, horizontal layout for sidebars/side lists */
   if (variant === "compact") {
-    return (
-      <CompactCard post={post} className={className} />
-    )
+    return <CompactCard post={post} className={className} />
   }
 
-  /* ----------------------------- Default + Featured ------------------------- */
   const isFeatured = variant === "featured"
 
   return (
-    <motion.article variants={tileVariants} className={className}>
+    <motion.article
+      variants={tileV}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.3, ease: ease.smooth }}
+      className={className}
+    >
       <Link
         href={`/blog/${post.slug}`}
         onPointerDownCapture={handlePointerDownCapture}
@@ -101,7 +97,7 @@ export function BlogCard({
           className={cn(
             "relative overflow-hidden rounded-[var(--radius-xl)]",
             "border border-[var(--border)] bg-[var(--card)]/40",
-            "transition-colors duration-300 ease-[var(--ease-premium)]",
+            "transition-[border-color] duration-300 ease-[var(--ease-premium)]",
             "group-hover:border-[var(--border-strong)]",
             isFeatured ? "aspect-[16/10]" : "aspect-[4/3]"
           )}
@@ -116,26 +112,27 @@ export function BlogCard({
                 : "(min-width: 1024px) 33vw, 100vw"
             }
             draggable={false}
-            className="object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.05]"
           />
 
-          {/* Category badge */}
-          <CategoryBadge category={post.category} />
+          {/* Subtle dark gradient on hover */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          />
 
-          {/* Hover arrow */}
+          <CategoryBadge category={post.category} />
           <HoverArrow />
         </div>
 
         {/* Content */}
         <div className={cn("flex flex-col gap-3", isFeatured ? "mt-6 gap-4" : "mt-5")}>
-          {/* Meta */}
-          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+          <div className="flex items-center gap-3 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
             <span>{post.date}</span>
             <span className="size-1 rounded-full bg-[var(--text-subtle)]/40" />
             <span>{post.readTime}</span>
           </div>
 
-          {/* Title */}
           <h3
             className={cn(
               "font-heading font-semibold leading-tight tracking-tight text-[var(--text)]",
@@ -149,7 +146,6 @@ export function BlogCard({
             {post.title}
           </h3>
 
-          {/* Excerpt */}
           <p
             className={cn(
               "text-[14px] leading-relaxed text-[var(--text-muted)]",
@@ -161,15 +157,14 @@ export function BlogCard({
             {post.excerpt}
           </p>
 
-          {/* Featured footer */}
           {isFeatured && (
             <div className="mt-1 flex items-center justify-between">
               <span className="text-[13px] text-[var(--text-muted)]">
                 By {post.author}
               </span>
-              <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--text)] transition-transform duration-300 group-hover:translate-x-0.5">
+              <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--text)] transition-transform duration-300 group-hover:translate-x-1">
                 Read article
-                <ArrowUpRight className="size-3.5" />
+                <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
               </span>
             </div>
           )}
@@ -179,9 +174,7 @@ export function BlogCard({
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                             Compact card variant                           */
-/* -------------------------------------------------------------------------- */
+/* ── Compact ──────────────────────────────────────────────────── */
 
 function CompactCard({
   post,
@@ -191,7 +184,7 @@ function CompactCard({
   className?: string
 }) {
   return (
-    <motion.article variants={tileVariants} className={className}>
+    <motion.article variants={tileV} className={className}>
       <Link
         href={`/blog/${post.slug}`}
         className={cn(
@@ -199,28 +192,22 @@ function CompactCard({
           "transition-colors duration-300 ease-[var(--ease-premium)]"
         )}
       >
-        {/* Meta */}
-        <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
-          <span className={getCategoryColor(post.category)}>
-            {post.category}
-          </span>
+        <div className="flex items-center gap-3 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+          <span className={getCategoryColor(post.category)}>{post.category}</span>
           <span className="size-1 rounded-full bg-[var(--text-subtle)]/40" />
           <span>{post.date}</span>
         </div>
 
-        {/* Title */}
         <h4 className="font-heading text-[18px] font-semibold leading-snug tracking-tight text-[var(--text)] transition-colors duration-300 ease-[var(--ease-premium)] group-hover:text-[var(--brand)] md:text-[20px]">
           {post.title}
         </h4>
 
-        {/* Excerpt */}
         <p className="line-clamp-2 text-[13px] leading-relaxed text-[var(--text-muted)] md:text-[14px]">
           {post.excerpt}
         </p>
 
-        {/* Footer */}
         <div className="mt-1 flex w-full items-center justify-between">
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
+          <span className="font-medium text-[11px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
             {post.readTime}
           </span>
           <ArrowUpRight
@@ -236,9 +223,7 @@ function CompactCard({
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                Sub-components                              */
-/* -------------------------------------------------------------------------- */
+/* ── Sub-components ───────────────────────────────────────────── */
 
 function CategoryBadge({ category }: { category: BlogPost["category"] }) {
   return (
@@ -246,7 +231,7 @@ function CategoryBadge({ category }: { category: BlogPost["category"] }) {
       className={cn(
         "absolute left-4 top-4 inline-flex items-center gap-2 rounded-full",
         "border border-[var(--border)] bg-[var(--background)]/70 px-3 py-1.5",
-        "font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-muted)] backdrop-blur-md"
+        "font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-muted)] backdrop-blur-md"
       )}
     >
       <span
@@ -267,7 +252,8 @@ function HoverArrow() {
       className={cn(
         "absolute right-4 top-4 flex size-9 items-center justify-center rounded-full",
         "border border-white/[0.1] bg-[var(--background)]/70 text-[var(--text-soft)] backdrop-blur-md",
-        "translate-y-2 opacity-0 transition-all duration-400 ease-[var(--ease-premium)]",
+        "translate-y-2 opacity-0",
+        "transition-[transform,opacity,border-color,color] duration-400 ease-[var(--ease-premium)]",
         "group-hover:translate-y-0 group-hover:opacity-100",
         "group-hover:border-[var(--brand-border)] group-hover:text-[var(--brand)]"
       )}

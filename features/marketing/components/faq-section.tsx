@@ -1,3 +1,4 @@
+// features/marketing/components/faq-section.tsx
 "use client"
 
 import { motion, type Variants } from "motion/react"
@@ -11,64 +12,44 @@ import {
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { faqs } from "@/features/marketing/data/faqs"
-import { premiumEase, sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 
-/* -------------------------------------------------------------------------- */
-/*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
+/* ── Variants ─────────────────────────────────────────────────────── */
 
-const sectionContainer: Variants = {
+const sectionV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
-  },
+  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
 }
 
-const headerVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: premiumEase },
-  },
+const headerV: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
 }
 
-const listContainer: Variants = {
+const listV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.2 },
-  },
+  show:   { transition: { staggerChildren: 0.05, delayChildren: 0.2 } },
 }
 
-const itemVariants: Variants = {
+const itemV: Variants = {
   hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: premiumEase },
-  },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+/* ── Component ────────────────────────────────────────────────────── */
 
 export function FAQSection() {
   return (
-    <section
-      id="faq"
-      className="relative bg-[var(--background)] py-20 md:py-28"
-    >
+    <section id="faq" className="relative bg-[var(--background)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
-          {/* Header */}
           <motion.div
-            variants={headerVariants}
+            variants={headerV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <SectionHeading>
@@ -82,46 +63,32 @@ export function FAQSection() {
             </p>
           </motion.div>
 
-          {/* FAQ list */}
           <motion.div
-            variants={listContainer}
+            variants={listV}
             className="mt-14 border-t border-[var(--border)] md:mt-20"
           >
-            <Accordion
-              defaultValue={faqs[0] ? [faqs[0].question] : undefined}
-            >
-              {faqs.map((faq, index) => {
-                const number = String(index + 1).padStart(2, "0")
+            <Accordion defaultValue={faqs[0] ? [faqs[0].question] : undefined}>
+              {faqs.map((faq, i) => (
+                <motion.div key={faq.question} variants={itemV}>
+                  <AccordionItem
+                    value={faq.question}
+                    className="border-b border-[var(--border)]"
+                  >
+                    <AccordionTrigger className="group flex w-full items-start gap-5 py-6 text-left no-underline transition-colors duration-300 hover:no-underline data-[state=open]:text-[var(--brand)]">
+                      <span className="mt-1 font-medium text-[12px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="flex-1 font-heading text-[18px] font-semibold tracking-tight text-[var(--text)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)] md:text-[22px]">
+                        {faq.question}
+                      </span>
+                    </AccordionTrigger>
 
-                return (
-                  <motion.div key={faq.question} variants={itemVariants}>
-                    <AccordionItem
-                      value={faq.question}
-                      className="border-b border-[var(--border)]"
-                    >
-                      <AccordionTrigger
-                        className={[
-                          "group flex w-full items-start gap-5 py-6 text-left no-underline",
-                          "transition-colors duration-300 ease-[var(--ease-premium)]",
-                          "hover:no-underline data-[state=open]:text-[var(--brand)]",
-                        ].join(" ")}
-                      >
-                        <span className="mt-1 font-mono text-[12px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
-                          {number}
-                        </span>
-
-                        <span className="flex-1 font-heading text-[18px] font-semibold tracking-tight text-[var(--text)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)] md:text-[22px]">
-                          {faq.question}
-                        </span>
-                      </AccordionTrigger>
-
-                      <AccordionContent className="pb-8 pl-[44px] pr-6 text-[14px] leading-relaxed text-[var(--text-muted)] md:text-[15px]">
-                        <p className="max-w-2xl">{faq.answer}</p>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </motion.div>
-                )
-              })}
+                    <AccordionContent className="pb-8 pl-[44px] pr-6 text-[14px] leading-relaxed text-[var(--text-muted)] md:text-[15px]">
+                      <p className="max-w-2xl">{faq.answer}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </motion.div>
+              ))}
             </Accordion>
           </motion.div>
         </motion.div>

@@ -1,3 +1,4 @@
+// features/blog/components/blog-featured.tsx
 "use client"
 
 import {
@@ -13,54 +14,49 @@ import { animate, motion, useMotionValue } from "motion/react"
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { premiumEase, sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { sectionContainer, itemVariants } from "./blog-variants"
+
+import { sectionV, itemV, itemBlurV } from "./blog-variants"
 import { BlogCard } from "./blog-card"
 import { getFeaturedPosts } from "@/features/marketing/data/blog-data"
 
-/* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
+/* ── Constants ────────────────────────────────────────────────── */
 
-const AUTOPLAY_INTERVAL = 5000 // ms between auto-advance
-const AUTOPLAY_RESUME_DELAY = 4000 // ms before autoplay resumes after interaction
+const AUTOPLAY_INTERVAL     = 5000
+const AUTOPLAY_RESUME_DELAY = 4000
 
 type DragInfo = {
-  offset: { x: number; y: number }
+  offset:   { x: number; y: number }
   velocity: { x: number; y: number }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+/* ── Component ────────────────────────────────────────────────── */
 
 export function BlogFeatured() {
   const posts = useMemo(() => getFeaturedPosts(), [])
 
-  const [index, setIndex] = useState(0)
+  const [index, setIndex]               = useState(0)
   const [viewportWidth, setViewportWidth] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
+  const [isPaused, setIsPaused]         = useState(false)
 
-  const viewportRef = useRef<HTMLDivElement>(null)
-  const hasSyncedRef = useRef(false)
-  const autoplayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const viewportRef       = useRef<HTMLDivElement>(null)
+  const hasSyncedRef      = useRef(false)
+  const autoplayTimerRef  = useRef<ReturnType<typeof setInterval> | null>(null)
+  const resumeTimerRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
   const preventCardClickRef = useRef(false)
-  const preventClickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  )
+  const preventClickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const x = useMotionValue(0)
 
-  /* -------------------------------- Responsive ------------------------------ */
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  /* Responsive */
+  const isDesktop  = useMediaQuery("(min-width: 1024px)")
   const isTabletUp = useMediaQuery("(min-width: 640px)")
   const slidesPerView = isDesktop ? 3 : isTabletUp ? 2 : 1
-  const maxIndex = Math.max(0, posts.length - slidesPerView)
+  const maxIndex     = Math.max(0, posts.length - slidesPerView)
   const currentIndex = Math.min(index, maxIndex)
 
-  /* ----------------------------- Viewport sizing ---------------------------- */
+  /* Viewport sizing */
   useEffect(() => {
     const el = viewportRef.current
     if (!el) return
@@ -72,13 +68,12 @@ export function BlogFeatured() {
   }, [])
 
   const stepWidth = viewportWidth / slidesPerView
-  const targetX = -(currentIndex * stepWidth)
-  const progress =
-    maxIndex === 0
-      ? 100
-      : ((currentIndex + slidesPerView) / posts.length) * 100
+  const targetX   = -(currentIndex * stepWidth)
+  const progress  = maxIndex === 0
+    ? 100
+    : ((currentIndex + slidesPerView) / posts.length) * 100
 
-  /* --------------------------- Animate to position -------------------------- */
+  /* Animate to position with smoother easing */
   useEffect(() => {
     if (!stepWidth) return
     if (!hasSyncedRef.current) {
@@ -86,30 +81,30 @@ export function BlogFeatured() {
       hasSyncedRef.current = true
       return
     }
-    const controls = animate(x, targetX, { duration: 0.9, ease: premiumEase })
+    const controls = animate(x, targetX, {
+      duration: 0.8,
+      ease: ease.out,
+    })
     return () => controls.stop()
   }, [targetX, stepWidth, x])
 
-  /* --------------------------------- Cleanup -------------------------------- */
+  /* Cleanup */
   useEffect(() => {
     return () => {
-      if (autoplayTimerRef.current) clearInterval(autoplayTimerRef.current)
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-      if (preventClickTimeoutRef.current)
-        clearTimeout(preventClickTimeoutRef.current)
+      if (autoplayTimerRef.current)      clearInterval(autoplayTimerRef.current)
+      if (resumeTimerRef.current)        clearTimeout(resumeTimerRef.current)
+      if (preventClickTimeoutRef.current) clearTimeout(preventClickTimeoutRef.current)
     }
   }, [])
 
-  /* --------------------------------- Helpers -------------------------------- */
+  /* Helpers */
   const clampIndex = useCallback(
     (value: number) => Math.max(0, Math.min(value, maxIndex)),
     [maxIndex]
   )
 
   const goTo = useCallback(
-    (value: number) => {
-      setIndex(clampIndex(value))
-    },
+    (value: number) => setIndex(clampIndex(value)),
     [clampIndex]
   )
 
@@ -117,7 +112,7 @@ export function BlogFeatured() {
     setIndex((i) => (i >= maxIndex ? 0 : i + 1))
   }, [maxIndex])
 
-  /* ----------------------------- Autoplay engine ---------------------------- */
+  /* Autoplay */
   const stopAutoplay = useCallback(() => {
     if (autoplayTimerRef.current) {
       clearInterval(autoplayTimerRef.current)
@@ -131,7 +126,6 @@ export function BlogFeatured() {
     autoplayTimerRef.current = setInterval(advance, AUTOPLAY_INTERVAL)
   }, [advance, maxIndex, stopAutoplay])
 
-  /* Run autoplay when not paused */
   useEffect(() => {
     if (isPaused || maxIndex === 0) {
       stopAutoplay()
@@ -141,15 +135,12 @@ export function BlogFeatured() {
     return stopAutoplay
   }, [isPaused, maxIndex, startAutoplay, stopAutoplay])
 
-  /* After manual interaction, resume autoplay after a delay */
   const scheduleResume = useCallback(() => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-    resumeTimerRef.current = setTimeout(() => {
-      setIsPaused(false)
-    }, AUTOPLAY_RESUME_DELAY)
+    resumeTimerRef.current = setTimeout(() => setIsPaused(false), AUTOPLAY_RESUME_DELAY)
   }, [])
 
-  /* ------------------------------ Manual controls --------------------------- */
+  /* Manual controls */
   const prev = useCallback(() => {
     setIsPaused(true)
     goTo(currentIndex - 1)
@@ -162,11 +153,9 @@ export function BlogFeatured() {
     scheduleResume()
   }, [currentIndex, goTo, scheduleResume])
 
-  /* ------------------------------ Drag handling ----------------------------- */
+  /* Drag */
   const releaseClickLock = useCallback(() => {
-    if (preventClickTimeoutRef.current) {
-      clearTimeout(preventClickTimeoutRef.current)
-    }
+    if (preventClickTimeoutRef.current) clearTimeout(preventClickTimeoutRef.current)
     preventClickTimeoutRef.current = setTimeout(() => {
       preventCardClickRef.current = false
     }, 140)
@@ -178,7 +167,7 @@ export function BlogFeatured() {
   }, [])
 
   const handleDragEnd = useCallback(
-    (_event: MouseEvent | TouchEvent | PointerEvent, info: DragInfo) => {
+    (_e: MouseEvent | TouchEvent | PointerEvent, info: DragInfo) => {
       releaseClickLock()
       if (!stepWidth) return
 
@@ -187,7 +176,7 @@ export function BlogFeatured() {
 
       const projectedIndex = clampIndex(Math.round(-x.get() / stepWidth))
       const draggedFar = Math.abs(info.offset.x) >= distanceThreshold
-      const movedFast = Math.abs(info.velocity.x) >= velocityThreshold
+      const movedFast  = Math.abs(info.velocity.x) >= velocityThreshold
 
       if (!draggedFar && !movedFast) {
         goTo(currentIndex)
@@ -204,14 +193,15 @@ export function BlogFeatured() {
     [clampIndex, currentIndex, goTo, releaseClickLock, scheduleResume, stepWidth, x]
   )
 
-  /* --------------------------------- Styles --------------------------------- */
+  /* Styles */
   const controlButton = cn(
     "flex size-12 items-center justify-center rounded-full",
     "border border-[var(--border)] bg-[var(--card)]/50 text-[var(--text-muted)]",
-    "transition-all duration-300 ease-[var(--ease-premium)]",
+    "transition-[border-color,background-color,color,transform] duration-300 ease-[var(--ease-premium)]",
     "hover:border-[var(--brand-border)] hover:bg-[var(--brand)]/10 hover:text-[var(--brand)]",
     "active:scale-95",
-    "disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
+    "disabled:cursor-not-allowed disabled:opacity-30",
+    "disabled:hover:border-[var(--border)] disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
   )
 
   if (posts.length === 0) return null
@@ -225,17 +215,18 @@ export function BlogFeatured() {
     >
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
+          {/* Header */}
           <motion.div
-            variants={itemVariants}
+            variants={itemBlurV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <div className="flex flex-col gap-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--brand)]">
+              <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)]">
                 Editor&apos;s picks
               </span>
               <SectionHeading>
@@ -249,8 +240,9 @@ export function BlogFeatured() {
             </p>
           </motion.div>
 
+          {/* Carousel */}
           <motion.div
-            variants={itemVariants}
+            variants={itemV}
             className="mt-14 md:mt-20"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
@@ -273,10 +265,7 @@ export function BlogFeatured() {
                   touchAction: "pan-y",
                 }}
                 drag={canDrag ? "x" : false}
-                dragConstraints={{
-                  left: -(maxIndex * stepWidth),
-                  right: 0,
-                }}
+                dragConstraints={{ left: -(maxIndex * stepWidth), right: 0 }}
                 dragElastic={0.06}
                 dragMomentum={false}
                 onDragStart={handleDragStart}
@@ -303,11 +292,11 @@ export function BlogFeatured() {
                 <motion.div
                   className="absolute left-0 top-0 h-px bg-[var(--brand)]"
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.6, ease: premiumEase }}
+                  transition={{ duration: 0.6, ease: ease.smooth }}
                 />
               </div>
 
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              <span className="font-medium text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
                 {String(currentIndex + 1).padStart(2, "0")} /{" "}
                 {String(maxIndex + 1).padStart(2, "0")}
               </span>

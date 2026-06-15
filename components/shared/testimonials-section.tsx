@@ -222,7 +222,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
       {/* Caption */}
       <figcaption className="mt-9">
         <p className="text-[15px] font-medium text-[var(--text)]">{name}</p>
-        <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+        <p className="mt-2 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
           {subline}
         </p>
       </figcaption>

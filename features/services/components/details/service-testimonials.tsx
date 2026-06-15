@@ -1,20 +1,18 @@
+// features/services/components/details/service-testimonials.tsx
 "use client"
 
 import { TestimonialsSection, type Testimonial } from "@/components/shared/testimonials-section"
 import type { ServiceTestimonial } from "@/features/marketing/data/services-page"
 
-type Props = {
-  testimonials: ServiceTestimonial[]
-}
+type Props = { testimonials: ServiceTestimonial[] }
 
 export function ServiceTestimonials({ testimonials }: Props) {
-  /* Adapt ServiceTestimonial → shared Testimonial shape */
   const items: Testimonial[] = testimonials.map((t) => ({
-    quote: t.quote,
-    name: t.name,
-    role: t.role,
-    company: t.company,
-    socialUrl: "#", // wire up real URLs when available
+    quote:     t.quote,
+    name:      t.name,
+    role:      t.role,
+    company:   t.company,
+    socialUrl: "#",
   }))
 
   return (

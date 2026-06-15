@@ -1,37 +1,31 @@
+// features/projects/components/project-card.tsx
 "use client"
 
 import {
-  useRef,
-  useState,
   useCallback,
   useEffect,
+  useRef,
+  useState,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "motion/react"
 import { ArrowUpRight } from "lucide-react"
 
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { premiumEase } from "@/lib/motion"
 import type { Project } from "@/features/marketing/data/projects-page"
-import Image from "next/image"
 
 type ProjectCardProps = {
-  project: Project
-  index?: number
-  priority?: boolean
-  /**
-   * `default` — full size, used on projects page
-   * `compact` — slightly tighter typography for homepage grid / carousel
-   */
-  size?: "default" | "compact"
-  /** Disable the in-view animation (parent handles it) */
+  project:           Project
+  index?:            number
+  priority?:         boolean
+  size?:             "default" | "compact"
   disableAnimation?: boolean
-  className?: string
-  /** Limit visible tags when needed */
-  maxTags?: number
-  /** Prevent navigation when parent carousel is dragging */
+  className?:        string
+  maxTags?:          number
   shouldPreventNavigation?: () => boolean
 }
 
@@ -45,28 +39,22 @@ export function ProjectCard({
   maxTags,
   shouldPreventNavigation,
 }: ProjectCardProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const videoRef     = useRef<HTMLVideoElement>(null)
+  const playTimeout  = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [videoReady, setVideoReady] = useState(false)
-  const playTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
-  const draggedRef = useRef(false)
+  const draggedRef      = useRef(false)
 
   useEffect(() => {
     return () => {
-      if (playTimeout.current) {
-        clearTimeout(playTimeout.current)
-      }
-
-      if (videoRef.current) {
-        videoRef.current.pause()
-      }
+      if (playTimeout.current) clearTimeout(playTimeout.current)
+      videoRef.current?.pause()
     }
   }, [])
 
   const handleEnter = useCallback(() => {
     if (!project.video || !videoRef.current) return
-
     playTimeout.current = setTimeout(() => {
       const v = videoRef.current
       if (!v) return
@@ -80,10 +68,7 @@ export function ProjectCard({
       clearTimeout(playTimeout.current)
       playTimeout.current = null
     }
-
-    if (videoRef.current) {
-      videoRef.current.pause()
-    }
+    videoRef.current?.pause()
   }, [])
 
   const handlePointerDownCapture = useCallback(
@@ -97,13 +82,9 @@ export function ProjectCard({
   const handlePointerMoveCapture = useCallback(
     (event: ReactPointerEvent<HTMLElement>) => {
       if (!pointerStartRef.current || draggedRef.current) return
-
       const dx = Math.abs(event.clientX - pointerStartRef.current.x)
       const dy = Math.abs(event.clientY - pointerStartRef.current.y)
-
-      if (dx > 8 || dy > 8) {
-        draggedRef.current = true
-      }
+      if (dx > 8 || dy > 8) draggedRef.current = true
     },
     []
   )
@@ -118,27 +99,18 @@ export function ProjectCard({
         event.preventDefault()
         event.stopPropagation()
       }
-
       draggedRef.current = false
     },
     [shouldPreventNavigation]
   )
 
   const isInteractive = Boolean(project.href)
-  const Wrapper = isInteractive ? Link : "div"
-  const wrapperProps = isInteractive ? { href: project.href! } : {}
+  const Wrapper       = isInteractive ? Link : "div"
+  const wrapperProps  = isInteractive ? { href: project.href! } : {}
 
-  const titleSize =
-    size === "compact"
-      ? "text-[18px] md:text-[22px]"
-      : "text-[22px] md:text-[26px]"
-
+  const titleSize    = size === "compact" ? "text-[18px] md:text-[22px]" : "text-[22px] md:text-[26px]"
   const titleSpacing = size === "compact" ? "mt-4" : "mt-5"
-
-  const tagSize =
-    size === "compact"
-      ? "px-2.5 py-1 text-[9px]"
-      : "px-3 py-1.5 text-[10px]"
+  const tagSize      = size === "compact" ? "px-2.5 py-1 text-[9px]" : "px-3 py-1.5 text-[12px]"
 
   const visibleTags =
     typeof maxTags === "number" ? project.tags.slice(0, maxTags) : project.tags
@@ -161,7 +133,7 @@ export function ProjectCard({
         className={cn(
           "relative w-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)]",
           "aspect-[16/10]",
-          "transition-colors duration-400 ease-[var(--ease-premium)]",
+          "transition-[border-color] duration-400 ease-[var(--ease-premium)]",
           "group-hover:border-[var(--border-strong)]"
         )}
         style={{ background: project.tone ?? "var(--card)" }}
@@ -176,8 +148,8 @@ export function ProjectCard({
           draggable={false}
           className={cn(
             "absolute inset-0 h-full w-full object-cover",
-            "transition-all duration-700 ease-[var(--ease-premium)]",
-            "group-hover:scale-[1.03]",
+            "transition-[transform,opacity] duration-700 ease-[var(--ease-premium)]",
+            "group-hover:scale-[1.04]",
             videoReady && project.video ? "group-hover:opacity-0" : ""
           )}
         />
@@ -200,18 +172,26 @@ export function ProjectCard({
           />
         )}
 
+        {/* Dark gradient on hover */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        />
+
         <div
           aria-hidden
           className="absolute inset-0 ring-1 ring-inset ring-white/[0.04]"
         />
 
+        {/* Hover arrow chip */}
         <div
           aria-hidden
           className={cn(
             "absolute right-4 top-4 flex size-9 items-center justify-center rounded-full",
             "border border-white/[0.1] bg-[var(--background)]/70 backdrop-blur-md",
             "text-[var(--text-soft)]",
-            "translate-y-2 opacity-0 transition-all duration-400 ease-[var(--ease-premium)]",
+            "translate-y-2 opacity-0",
+            "transition-[transform,opacity,border-color,color] duration-400 ease-[var(--ease-premium)]",
             "group-hover:translate-y-0 group-hover:opacity-100",
             "group-hover:border-[var(--brand-border)] group-hover:text-[var(--brand)]"
           )}
@@ -220,13 +200,8 @@ export function ProjectCard({
         </div>
       </div>
 
-      {/* Title + tags */}
-      <div
-        className={cn(
-          "flex flex-wrap items-baseline justify-between gap-3",
-          titleSpacing
-        )}
-      >
+      {/* Meta */}
+      <div className={cn("flex flex-wrap items-baseline justify-between gap-3", titleSpacing)}>
         <h3
           className={cn(
             "font-heading font-semibold tracking-tight text-[var(--text)]",
@@ -245,7 +220,7 @@ export function ProjectCard({
               key={tag}
               className={cn(
                 "rounded-full border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm",
-                "font-mono uppercase tracking-[0.18em] text-[var(--text-muted)]",
+                "font-medium uppercase tracking-[0.18em] text-[var(--text-muted)]",
                 "transition-colors duration-300",
                 "group-hover:border-[var(--border-strong)] group-hover:text-[var(--text-soft)]",
                 tagSize
@@ -265,14 +240,15 @@ export function ProjectCard({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{
-        duration: 0.6,
-        delay: (index % 2) * 0.08,
-        ease: premiumEase,
+        duration: 0.65,
+        delay:    (index % 2) * 0.08,
+        ease:     ease.out,
       }}
+      whileHover={{ y: -3 }}
       className="group"
     >
       {inner}

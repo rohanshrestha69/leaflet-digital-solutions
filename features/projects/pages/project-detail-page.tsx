@@ -1,3 +1,4 @@
+// features/projects/pages/project-detail-page.tsx
 import { notFound } from "next/navigation"
 
 import {
@@ -5,31 +6,30 @@ import {
   getNextProject,
 } from "@/features/marketing/data/projects-page"
 
-import { ProjectDetailHero } from "../components/details/project-detail-hero"
-import { ProjectDetailAbout } from "../components/details/project-detail-about"
-import { ProjectDetailGallery } from "../components/details/project-detail-gallery"
-import { ProjectDetailChallenges } from "../components/details/project-detail-challenges"
-import { ProjectDetailMetrics } from "../components/details/project-detail-metrics"
-import { ProjectDetailProcess } from "../components/details/project-detail-process"
-import { ProjectDetailTakeaways } from "../components/details/project-detail-takeaways"
+import { ProjectDetailHero }        from "../components/details/project-detail-hero"
+import { ProjectDetailAbout }       from "../components/details/project-detail-about"
+import { ProjectDetailGallery }     from "../components/details/project-detail-gallery"
+import { ProjectDetailChallenges }  from "../components/details/project-detail-challenges"
+import { ProjectDetailMetrics }     from "../components/details/project-detail-metrics"
+import { ProjectDetailProcess }     from "../components/details/project-detail-process"
+import { ProjectDetailTakeaways }   from "../components/details/project-detail-takeaways"
 import { ProjectDetailTestimonial } from "../components/details/project-detail-testimonial"
-import { ProjectDetailNext } from "../components/details/project-detail-next"
-import { ProjectDetailCTA } from "../components/details/project-detail-cta"
+import { ProjectDetailNext }        from "../components/details/project-detail-next"
+import { ProjectDetailCTA }         from "../components/details/project-detail-cta"
 
-type Props = {
-  slug: string
-}
+type Props = { slug: string }
 
 export default function ProjectDetailPage({ slug }: Props) {
   const project = getProjectBySlug(slug)
   if (!project) notFound()
 
   const next = getNextProject(slug)
+
   const hasGalleryRowOne = project.gallery && project.gallery.length >= 3
   const hasGalleryRowTwo = project.gallery && project.gallery.length >= 4
-  const hasChallenges = project.challenge || project.solution
-  const hasMetrics = project.metrics && project.metrics.length > 0
-  const hasProcess = project.process && project.process.length > 0
+  const hasChallenges    = project.challenge || project.solution
+  const hasMetrics       = project.metrics && project.metrics.length > 0
+  const hasProcess       = project.process && project.process.length > 0
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -56,12 +56,9 @@ export default function ProjectDetailPage({ slug }: Props) {
       )}
 
       {hasMetrics && <ProjectDetailMetrics metrics={project.metrics!} />}
-
       {hasProcess && <ProjectDetailProcess process={project.process!} />}
 
-      {project.takeaways && (
-        <ProjectDetailTakeaways text={project.takeaways} />
-      )}
+      {project.takeaways && <ProjectDetailTakeaways text={project.takeaways} />}
 
       {project.testimonial && (
         <ProjectDetailTestimonial

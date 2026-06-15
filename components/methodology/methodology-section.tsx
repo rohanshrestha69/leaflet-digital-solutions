@@ -202,7 +202,7 @@ export function MethodologySection() {
                       {/* Number */}
                       <span
                         className={cn(
-                          "mt-1 font-mono text-[12px] tabular-nums tracking-[0.18em] transition-colors duration-500",
+                          "mt-1 font-medium text-[12px] tabular-nums tracking-[0.18em] transition-colors duration-500",
                           isActive
                             ? "text-[var(--brand)]"
                             : "text-[var(--text-subtle)] group-hover:text-[var(--brand)]"

@@ -32,7 +32,7 @@ export function StatsStrip() {
               </p>
               <motion.p
                 variants={label}
-                className="mt-4 font-mono text-[10px] uppercase tracking-[0.24em] text-white/32"
+                className="mt-4 font-medium text-[12px] uppercase tracking-[0.24em] text-white/32"
               >
                 {s.label}
               </motion.p>

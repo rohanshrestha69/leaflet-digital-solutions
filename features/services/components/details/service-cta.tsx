@@ -1,9 +1,9 @@
+// features/services/components/details/service-cta.tsx
 "use client"
 
 import { CTASection } from "@/features/projects/components/cta-section"
 
 type ServiceCTAProps = {
-  /** Optional service title to personalize the CTA */
   serviceTitle?: string
 }
 
@@ -23,16 +23,8 @@ export function ServiceCTA({ serviceTitle }: ServiceCTAProps) {
           : "Bring your vision to life and transform your ideas into a powerful, unforgettable brand experience that drives growth and lasting impact."
       }
       actions={[
-        {
-          label: "Schedule a call",
-          href: "/contact",
-          variant: "orange",
-        },
-        {
-          label: "All services",
-          href: "/services",
-          variant: "outlineDark",
-        },
+        { label: "Schedule a call", href: "/contact", variant: "orange" },
+        { label: "All services",    href: "/services", variant: "outlineDark" },
       ]}
       withDots
       align="center"

@@ -1,18 +1,38 @@
 // features/projects/components/project-section-shell.tsx
 "use client"
 
-import { motion } from "motion/react"
-import { Container } from "@/components/shared/container"
-import { cn } from "@/lib/utils"
-import { fadeUpBlur, fadeUp, sectionViewport } from "@/lib/motion"
 import type { ReactNode } from "react"
+import { motion, type Variants } from "motion/react"
+
+import { Container } from "@/components/shared/container"
+import { ease, viewport } from "@/lib/motion"
+import { cn } from "@/lib/utils"
+
+const headerV: Variants = {
+  hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: ease.out },
+  },
+}
+
+const childV: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: ease.out, delay: 0.1 },
+  },
+}
 
 type ProjectSectionShellProps = {
-  eyebrow?: string
-  title: string
-  children: ReactNode
+  eyebrow?:  string
+  title:     string
+  children:  ReactNode
   className?: string
-  divider?: boolean
+  divider?:  boolean
 }
 
 export function ProjectSectionShell({
@@ -33,14 +53,14 @@ export function ProjectSectionShell({
       <Container wide>
         <div className="flex flex-col gap-12 md:gap-16">
           <motion.div
-            variants={fadeUpBlur(24, 4, 0.7)}
+            variants={headerV}
             initial="hidden"
-            whileInView="visible"
-            viewport={sectionViewport}
+            whileInView="show"
+            viewport={viewport.section}
             className="flex flex-col gap-3"
           >
             {eyebrow && (
-              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[var(--text-subtle)]">
+              <span className="font-medium text-[12px] uppercase tracking-[0.24em] text-[var(--text-subtle)]">
                 {eyebrow}
               </span>
             )}
@@ -50,10 +70,10 @@ export function ProjectSectionShell({
           </motion.div>
 
           <motion.div
-            variants={fadeUp(16, 0.6, 0.1)}
+            variants={childV}
             initial="hidden"
-            whileInView="visible"
-            viewport={sectionViewport}
+            whileInView="show"
+            viewport={viewport.section}
           >
             {children}
           </motion.div>

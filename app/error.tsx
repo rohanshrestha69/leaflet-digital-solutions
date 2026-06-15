@@ -15,7 +15,7 @@ export default function ErrorPage({
     <main className="min-h-[70vh] bg-[var(--background)] py-24 flex items-center">
       <Container className="flex items-center justify-center">
         <div className="max-w-2xl rounded-[24px] border border-white/[0.08] bg-[var(--card)] p-8 md:p-12">
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-[var(--brand)]">Error</p>
+          <p className="font-medium text-xs uppercase tracking-[0.22em] text-[var(--brand)]">Error</p>
           <h1 className="mt-5 font-heading text-4xl font-bold text-white">Something went wrong.</h1>
           <p className="mt-5 text-base leading-8 text-white/62">
             The page could not be loaded properly. Please try again or return to the homepage.

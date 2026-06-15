@@ -1,6 +1,7 @@
+// components/layout/site-header.tsx
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -10,33 +11,54 @@ import { ArrowUpRight } from "lucide-react"
 import { buttonVariants } from "@/components/ui/button"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { navLinks } from "@/features/marketing/data/nav-links"
-import { premiumEase } from "@/lib/motion"
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-/* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------ */
+/*  Constants                                                          */
+/* ------------------------------------------------------------------ */
 
 const SCROLL_THRESHOLD = 12
-const SECTION_OFFSET = 140
+const SECTION_OFFSET   = 140
 
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 
 export function SiteHeader() {
   const pathname = usePathname()
+
   const [scrolled, setScrolled] = useState(false)
+
   const [activeHash, setActiveHash] = useState("")
 
-  /* ------------------------------ Scroll state ------------------------------ */
+  const [syncedPath, setSyncedPath] = useState(pathname)
+  if (syncedPath !== pathname) {
+    setSyncedPath(pathname)
+    if (pathname !== "/" && activeHash !== "") {
+      setActiveHash("")
+    }
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual"
+    }
+
+    setScrolled(window.scrollY > SCROLL_THRESHOLD)
+  }, [])
   useEffect(() => {
     let raf: number | null = null
 
     const update = () => {
-      const next = window.scrollY > SCROLL_THRESHOLD
-      setScrolled((prev) => (prev === next ? prev : next))
       raf = null
+      setScrolled((prev) => {
+        const next = window.scrollY > SCROLL_THRESHOLD
+        return prev === next ? prev : next
+      })
     }
 
     const onScroll = () => {
@@ -44,7 +66,6 @@ export function SiteHeader() {
       raf = requestAnimationFrame(update)
     }
 
-    update()
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => {
       window.removeEventListener("scroll", onScroll)
@@ -52,7 +73,7 @@ export function SiteHeader() {
     }
   }, [])
 
-  /* --------------------------- Hash change tracking ------------------------- */
+  /* ── Hash-change listener ─────────────────────────────────── */
   useEffect(() => {
     const update = () => setActiveHash(window.location.hash)
     update()
@@ -60,7 +81,7 @@ export function SiteHeader() {
     return () => window.removeEventListener("hashchange", update)
   }, [])
 
-  /* --------------------- Active section tracking on home -------------------- */
+  /* ── Section visibility tracking (home only) ──────────────── */
   useEffect(() => {
     if (pathname !== "/") return
 
@@ -76,13 +97,12 @@ export function SiteHeader() {
 
     const update = () => {
       raf = null
-      let current = sections[0]
-      for (const section of sections) {
-        if (section.getBoundingClientRect().top <= SECTION_OFFSET) {
-          current = section
-        } else break
+      let current = sections[0]!
+      for (const s of sections) {
+        if (s.getBoundingClientRect().top <= SECTION_OFFSET) current = s
+        else break
       }
-      setActiveHash((prev) => (prev === `#${current.id}` ? prev : `#${current.id}`))
+      setActiveHash(`#${current.id}`)
     }
 
     const schedule = () => {
@@ -93,7 +113,6 @@ export function SiteHeader() {
     update()
     window.addEventListener("scroll", schedule, { passive: true })
     window.addEventListener("resize", schedule)
-
     return () => {
       window.removeEventListener("scroll", schedule)
       window.removeEventListener("resize", schedule)
@@ -101,97 +120,79 @@ export function SiteHeader() {
     }
   }, [pathname])
 
+  /* ── Nav-link click handler (manages active hash) ─────────── */
+  const handleNavClick = (href: string) => {
+    const hashIndex = href.indexOf("#")
+    if (hashIndex === -1) return
+    setActiveHash(href.slice(hashIndex))
+  }
+
   return (
     <motion.header
-      initial={{ y: -16, opacity: 0 }}
+      initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: premiumEase }}
+      transition={{ duration: 0.5, ease: ease.out, delay: 0.1 }}
       className="fixed inset-x-0 top-0 z-[100]"
     >
+      {/* Glass background — `initial={false}` skips first-mount animation
+       * so it never flickers in unless `scrolled` actually flips. */}
+      <motion.div
+        className={cn(
+          "absolute inset-0 border-b backdrop-blur-md",
+          scrolled ? "border-white/[0.06]" : "border-transparent"
+        )}
+        initial={false}
+        animate={{
+          opacity: scrolled ? 1 : 0,
+          backgroundColor: scrolled
+            ? "rgba(8,7,6,0.82)"
+            : "rgba(8,7,6,0)",
+        }}
+        transition={{ duration: 0.35, ease: ease.smooth }}
+      />
+
       <div
         className={cn(
-          "flex items-center justify-between transition-[background-color,border-color,padding,box-shadow] duration-300 ease-[var(--ease-premium)]",
+          "relative flex items-center justify-between",
           "px-4 lg:px-16",
-          scrolled
-            ? "border-b border-white/[0.06] bg-[var(--background)] py-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]"
-            : "border-b border-transparent bg-transparent py-5"
+          "transition-[padding] duration-300 ease-[var(--ease-premium)]",
+          scrolled ? "py-3" : "py-5"
         )}
       >
         {/* Mobile: hamburger + logo */}
         <div className="flex items-center gap-3 lg:hidden">
           <MobileNav />
-          <Link
-            href="/#home"
-            aria-label="Leaflet — Home"
-            className="inline-flex items-center gap-2 font-heading font-bold tracking-wide text-white"
-          >
-            <Image
-              src="/logo_white.svg"
-              alt=""
-              width={32}
-              height={32}
-              priority
-              className="h-8 w-8 object-contain"
-            />
-            <span className="text-[24px] tracking-wider">Leaflet</span>
-          </Link>
+          <Logo size={24} textSize="text-[24px]" />
         </div>
 
         {/* Desktop logo */}
-        <Link
-          href="/#home"
-          aria-label="Leaflet — Home"
-          className="hidden items-center gap-2 font-heading font-bold tracking-wide text-white lg:inline-flex"
-        >
-          <Image
-            src="/logo_white.svg"
-            alt=""
-            width={32}
-            height={32}
-            priority
-            className="h-8 w-8 shrink-0 object-contain"
-          />
-          <span className="text-[28px] tracking-wider">Leaflet</span>
-        </Link>
+        <div className="hidden lg:block">
+          <Logo size={32} textSize="text-[28px]" />
+        </div>
 
         {/* Desktop nav */}
         <nav
           className="hidden items-center gap-1 lg:flex"
           aria-label="Primary navigation"
         >
-          {navLinks.map((link) => {
-            const isActive = isActiveNavLink(link.href, pathname, activeHash)
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => {
-                  const hash = getHashFromHref(link.href)
-                  if (hash) setActiveHash(hash)
-                }}
-                className={cn(
-                  "relative rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 ease-[var(--ease-premium)]",
-                  isActive
-                    ? "text-[var(--brand)]"
-                    : "text-white/60 hover:text-white"
-                )}
-              >
-                {link.label}
-              </Link>
-            )
-          })}
+          {navLinks.map((link) => (
+            <NavItem
+              key={link.href}
+              href={link.href}
+              label={link.label}
+              isActive={isActiveLink(link.href, pathname, activeHash)}
+              onClick={() => handleNavClick(link.href)}
+            />
+          ))}
         </nav>
 
         {/* Desktop CTA */}
         <Link
           href="/contact"
           className={cn(
-            buttonVariants({
-              variant: "orange",
-              size: "lg",
-              className: "hover:translate-none hover:shadow-none",
-            }),
-            "hidden items-center gap-2 lg:inline-flex"
+            buttonVariants({ variant: "orange", size: "lg" }),
+            "hidden items-center gap-2 lg:inline-flex",
+            "hover:translate-none hover:shadow-none"
           )}
         >
           Build with us
@@ -202,12 +203,9 @@ export function SiteHeader() {
         <Link
           href="/contact"
           className={cn(
-            buttonVariants({
-              variant: "orange",
-              size: "default",
-              className: "px-4 hover:translate-none hover:shadow-none",
-            }),
-            "inline-flex items-center gap-1.5 lg:hidden"
+            buttonVariants({ variant: "orange", size: "default" }),
+            "inline-flex items-center gap-1.5 px-4 lg:hidden",
+            "hover:translate-none hover:shadow-none"
           )}
         >
           Build with us
@@ -218,19 +216,78 @@ export function SiteHeader() {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------ */
+/*  Sub-components                                                     */
+/* ------------------------------------------------------------------ */
 
-function isActiveNavLink(href: string, pathname: string, activeHash: string) {
-  const hashIndex = href.indexOf("#")
-  if (hashIndex === -1) return pathname === href
-  const path = href.slice(0, hashIndex) || "/"
-  const hash = href.slice(hashIndex)
-  return pathname === path && activeHash === hash
+function Logo({ size, textSize }: { size: number; textSize: string }) {
+  return (
+    <Link
+      href="/#home"
+      aria-label="Leaflet — Home"
+      className="inline-flex items-center gap-2 font-heading font-bold tracking-wide text-white"
+    >
+      <Image
+        src="/logo_white.svg"
+        alt=""
+        width={size}
+        height={size}
+        priority
+        className="shrink-0 object-contain"
+        style={{ width: size, height: size }}
+      />
+      <span className={cn("tracking-wider", textSize)}>Leaflet</span>
+    </Link>
+  )
 }
 
-function getHashFromHref(href: string) {
+type NavItemProps = {
+  href:     string
+  label:    string
+  isActive: boolean
+  onClick:  () => void
+}
+
+function NavItem({ href, label, isActive, onClick }: NavItemProps) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={cn(
+        "relative rounded-md px-4 py-2 text-sm font-medium",
+        "transition-colors duration-200",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]/40",
+        isActive ? "text-[var(--brand)]" : "text-white/60 hover:text-white"
+      )}
+    >
+      {label}
+
+      <motion.span
+        className="absolute inset-x-4 -bottom-0.5 h-px bg-[var(--brand)] origin-left"
+        initial={false}
+        animate={{ scaleX: isActive ? 1 : 0 }}
+        transition={{ duration: 0.35, ease: ease.inOut }}
+      />
+    </Link>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Active-link resolver                                               */
+/* ------------------------------------------------------------------ */
+
+function isActiveLink(href: string, pathname: string, activeHash: string) {
   const hashIndex = href.indexOf("#")
-  return hashIndex === -1 ? null : href.slice(hashIndex)
+
+  if (hashIndex !== -1) {
+    const path = href.slice(0, hashIndex) || "/"
+    const hash = href.slice(hashIndex)
+    if (pathname !== path) return false
+    if (!activeHash && hash === "#home") return true
+    return activeHash === hash
+  }
+
+  if (href === "/") return pathname === "/"
+
+  return pathname === href || pathname.startsWith(`${href}/`)
 }

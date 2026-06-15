@@ -1,3 +1,4 @@
+// features/marketing/components/dual-cta-section.tsx
 "use client"
 
 import { useEffect, useRef, useState, type ReactNode } from "react"
@@ -8,28 +9,20 @@ import { motion, type Variants } from "motion/react"
 
 import { buttonVariants } from "@/components/ui/button"
 import { Container } from "@/components/shared/container"
-import { premiumEase, sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /* -------------------------------------------------------------------------- */
 /*                              Lazy-loaded visuals                           */
-/*  Both visuals are heavy (WebGL / animated images).                         */
-/*  Load them only when needed, no SSR, and skip them on small screens.       */
 /* -------------------------------------------------------------------------- */
 
 const GlobeVisual = dynamic(
-  () =>
-    import("./dual-cta-visuals").then(
-      (m) => m.GlobeVisual
-    ),
+  () => import("./dual-cta-visuals").then((m) => m.GlobeVisual),
   { ssr: false, loading: () => <VisualPlaceholder /> }
 )
 
 const MarqueeVisual = dynamic(
-  () =>
-    import("./dual-cta-visuals").then(
-      (m) => m.MarqueeVisual
-    ),
+  () => import("./dual-cta-visuals").then((m) => m.MarqueeVisual),
   { ssr: false, loading: () => <VisualPlaceholder /> }
 )
 
@@ -43,18 +36,14 @@ function VisualPlaceholder() {
 /*                                  Variants                                  */
 /* -------------------------------------------------------------------------- */
 
-const sectionContainer: Variants = {
+const sectionV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 }
 
-const cardVariants: Variants = {
+const cardV: Variants = {
   hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: premiumEase },
-  },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ease.out } },
 }
 
 /* -------------------------------------------------------------------------- */
@@ -66,13 +55,13 @@ export function DualCTASection() {
     <section className="relative bg-[var(--background)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
           className="grid gap-5 md:gap-6 lg:grid-cols-2"
         >
-          <motion.div variants={cardVariants}>
+          <motion.div variants={cardV}>
             <CTACard
               label="For businesses"
               title="Scale your digital presence"
@@ -80,13 +69,11 @@ export function DualCTASection() {
               href="/contact"
               button="Start a project"
               variant="orange"
-              renderVisual={(active) =>
-                active ? <GlobeVisual /> : <VisualPlaceholder />
-              }
+              renderVisual={(active) => active ? <GlobeVisual /> : <VisualPlaceholder />}
             />
           </motion.div>
 
-          <motion.div variants={cardVariants}>
+          <motion.div variants={cardV}>
             <CTACard
               label="For agencies"
               title="White-label that delivers"
@@ -94,9 +81,7 @@ export function DualCTASection() {
               href="/contact"
               button="Partner with us"
               variant="outlineDark"
-              renderVisual={(active) =>
-                active ? <MarqueeVisual /> : <VisualPlaceholder />
-              }
+              renderVisual={(active) => active ? <MarqueeVisual /> : <VisualPlaceholder />}
             />
           </motion.div>
         </motion.div>
@@ -119,17 +104,8 @@ type CTACardProps = {
   renderVisual: (active: boolean) => ReactNode
 }
 
-function CTACard({
-  label,
-  title,
-  body,
-  href,
-  button,
-  variant,
-  renderVisual,
-}: CTACardProps) {
-  /* Render the heavy visual only when the card is actually visible. */
-  const ref = useRef<HTMLDivElement | null>(null)
+function CTACard({ label, title, body, href, button, variant, renderVisual }: CTACardProps) {
+  const ref = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(false)
 
   useEffect(() => {
@@ -138,9 +114,7 @@ function CTACard({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          setActive(entry.isIntersecting)
-        }
+        for (const entry of entries) setActive(entry.isIntersecting)
       },
       { threshold: 0.15 }
     )
@@ -154,13 +128,10 @@ function CTACard({
       ref={ref}
       className={cn(
         "group relative flex min-h-[420px] overflow-hidden rounded-[var(--radius-xl)]",
-        "border border-[var(--border)] bg-[var(--card)]/40",
-        "p-7 md:p-10",
-        "transition-colors duration-300 ease-[var(--ease-premium)]",
-        "hover:border-[var(--border-strong)]"
+        "border border-[var(--border)] bg-[var(--card)]/40 p-7 md:p-10",
+        "transition-colors duration-300 ease-[var(--ease-premium)] hover:border-[var(--border-strong)]"
       )}
     >
-      {/* Visual layer */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-90"
@@ -168,9 +139,8 @@ function CTACard({
         {renderVisual(active)}
       </div>
 
-      {/* Copy + CTA */}
       <div className="relative z-10 mt-auto max-w-sm">
-        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--brand)]">
+        <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)]">
           {label}
         </span>
         <h3 className="mt-3 font-heading text-[24px] font-semibold leading-tight tracking-tight text-[var(--text)] md:text-[30px]">
@@ -179,17 +149,11 @@ function CTACard({
         <p className="mt-3 text-[14px] leading-relaxed text-[var(--text-muted)] md:text-[15px]">
           {body}
         </p>
-        <Link
-          href={href}
-          className={cn(
-            buttonVariants({ variant, size: "lg" }),
-            "mt-7 gap-2"
-          )}
-        >
+        <Link href={href} className={cn(buttonVariants({ variant, size: "lg" }), "mt-7 gap-2")}>
           {button}
           <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
         </Link>
       </div>
     </article>
   )
-}   
+}

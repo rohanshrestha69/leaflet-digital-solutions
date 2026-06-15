@@ -1,11 +1,11 @@
+// features/blog/components/details/blog-toc.tsx
 "use client"
 
+import { motion } from "motion/react"
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-type TocItem = {
-  id: string
-  label: string
-}
+type TocItem = { id: string; label: string }
 
 type BlogTocProps = {
   items: TocItem[]
@@ -15,9 +15,10 @@ type BlogTocProps = {
 export function BlogToc({ items, activeId }: BlogTocProps) {
   return (
     <nav aria-label="Table of contents" className="flex flex-col gap-1">
-      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+      <p className="mb-3 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
         On this page
       </p>
+
       {items.map((item) => {
         const active = activeId === item.id
         const label =
@@ -28,20 +29,24 @@ export function BlogToc({ items, activeId }: BlogTocProps) {
             key={item.id}
             href={`#${item.id}`}
             className={cn(
-              "group flex items-start gap-3 py-2 text-[13px] transition-colors duration-300",
+              "group flex items-start gap-3 py-2 text-[13px]",
+              "transition-colors duration-300 ease-[var(--ease-premium)]",
               active
                 ? "text-[var(--text)]"
                 : "text-[var(--text-subtle)] hover:text-[var(--text-muted)]"
             )}
           >
-            <span
+            {/* Animated indicator line */}
+            <motion.span
               aria-hidden
               className={cn(
-                "mt-[7px] h-px shrink-0 transition-all duration-300",
-                active
-                  ? "w-6 bg-[var(--brand)]"
-                  : "w-3 bg-[var(--border)] group-hover:w-4 group-hover:bg-[var(--text-muted)]"
+                "mt-[7px] h-px shrink-0 origin-left",
+                active ? "bg-[var(--brand)]" : "bg-[var(--border)] group-hover:bg-[var(--text-muted)]"
               )}
+              animate={{
+                width: active ? 24 : 12,
+              }}
+              transition={{ duration: 0.4, ease: ease.smooth }}
             />
             <span className={active ? "font-medium" : ""}>{label}</span>
           </a>

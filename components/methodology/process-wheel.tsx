@@ -248,7 +248,7 @@ export function ProcessWheel({
             >
               <motion.span
                 variants={centerItem}
-                className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--brand)] sm:text-[11px]"
+                className="font-medium text-[12px] uppercase tracking-[0.28em] text-[var(--brand)] sm:text-[11px]"
               >
                 {active.index}
               </motion.span>

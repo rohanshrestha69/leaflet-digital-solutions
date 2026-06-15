@@ -12,7 +12,7 @@ export default function NotFound() {
       <Container className="relative">
         <FloatingSquares className="absolute right-0 top-0" />
         <div className="max-w-3xl">
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-[var(--brand)]">404</p>
+          <p className="font-medium text-xs uppercase tracking-[0.22em] text-[var(--brand)]">404</p>
           <h1 className="mt-5 font-heading text-[42px] font-extrabold leading-tight text-white md:text-[68px]">
             This page is not available.
           </h1>

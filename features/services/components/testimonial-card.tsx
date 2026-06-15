@@ -2,8 +2,9 @@
 "use client"
 
 import { motion } from "motion/react"
+
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { fadeUp } from "@/lib/motion"
 import type { ServiceTestimonial } from "@/features/marketing/data/services-page"
 
 type TestimonialCardProps = {
@@ -13,11 +14,15 @@ type TestimonialCardProps = {
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
     <motion.article
-      variants={fadeUp(20, 0.55)}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.55, ease: ease.out }}
+      whileHover={{ y: -2 }}
       className={cn(
         "group/quote flex flex-col justify-between gap-8 rounded-[var(--radius-xl)]",
         "border border-[var(--border)] bg-[var(--card)] p-7 md:p-8",
-        "transition-colors duration-300",
+        "transition-[border-color] duration-300",
         "hover:border-[var(--border-strong)]"
       )}
     >
@@ -29,7 +34,7 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
 
       <div className="flex items-center justify-between gap-4 border-t border-[var(--border)] pt-5">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] font-mono text-[12px] font-semibold uppercase text-[var(--brand)]">
+          <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] font-medium text-[12px] font-semibold uppercase text-[var(--brand)]">
             {testimonial.name
               .split(" ")
               .map((n) => n[0])
@@ -45,19 +50,6 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
             </p>
           </div>
         </div>
-
-        {/* <a
-          href="#"
-          aria-label={`${testimonial.name} on LinkedIn`}
-          className={cn(
-            "grid size-9 shrink-0 place-items-center rounded-full",
-            "border border-[var(--border)] bg-transparent text-[var(--text-muted)]",
-            "transition-colors duration-300",
-            "hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand)]"
-          )}
-        >
-          <Social className="size-4" />
-        </a> */}
       </div>
     </motion.article>
   )

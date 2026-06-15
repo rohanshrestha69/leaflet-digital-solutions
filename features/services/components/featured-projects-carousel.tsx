@@ -1,6 +1,13 @@
+// features/services/components/featured-projects-carousel.tsx
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import Link from "next/link"
 import {
   animate,
@@ -10,15 +17,15 @@ import {
 } from "motion/react"
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import { premiumEase } from "@/lib/motion"
 import { buttonVariants } from "@/components/ui/button"
+import { ProjectCard } from "@/features/projects/components/project-card"
 import { getFeaturedProjects } from "@/features/marketing/data/projects-page"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { ProjectCard } from "@/features/projects/components/project-card"
+import { ease } from "@/lib/motion"
+import { cn } from "@/lib/utils"
 
 type DragInfo = {
-  offset: { x: number; y: number }
+  offset:   { x: number; y: number }
   velocity: { x: number; y: number }
 }
 
@@ -32,55 +39,46 @@ export function FeaturedProjectsCarousel() {
     []
   )
 
-  const [index, setIndex] = useState(0)
+  const [index, setIndex]                 = useState(0)
   const [viewportWidth, setViewportWidth] = useState(0)
 
-  const viewportRef = useRef<HTMLDivElement>(null)
-  const hasSyncedInitialPositionRef = useRef(false)
-  const preventCardClickRef = useRef(false)
-  const preventClickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  )
+  const viewportRef            = useRef<HTMLDivElement>(null)
+  const hasSyncedRef           = useRef(false)
+  const preventCardClickRef    = useRef(false)
+  const preventClickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const x = useMotionValue(0)
 
-  const isTabletUp = useMediaQuery("(min-width: 640px)")
+  const isTabletUp    = useMediaQuery("(min-width: 640px)")
   const slidesPerView = isTabletUp ? 2 : 1
-  const maxIndex = Math.max(0, projects.length - slidesPerView)
-
-  const currentIndex = Math.min(index, maxIndex)
+  const maxIndex      = Math.max(0, projects.length - slidesPerView)
+  const currentIndex  = Math.min(index, maxIndex)
 
   useEffect(() => {
     const el = viewportRef.current
     if (!el) return
-
     const update = () => setViewportWidth(el.clientWidth)
     update()
-
     const observer = new ResizeObserver(update)
     observer.observe(el)
-
     return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
     return () => {
-      if (preventClickTimeoutRef.current) {
-        clearTimeout(preventClickTimeoutRef.current)
-      }
+      if (preventClickTimeoutRef.current) clearTimeout(preventClickTimeoutRef.current)
     }
   }, [])
 
-  const stepWidth = viewportWidth / slidesPerView
-  const targetX = -(currentIndex * stepWidth)
+  const stepWidth      = viewportWidth / slidesPerView
+  const targetX        = -(currentIndex * stepWidth)
   const totalDragRange = maxIndex * stepWidth
 
-  /* Derive indicator position smoothly from the live x motion value */
   const indicatorLeft = useTransform(x, (value) => {
     if (totalDragRange === 0) return "0%"
-    const progress = Math.max(0, Math.min(1, -value / totalDragRange))
-    const segmentWidthPct = 100 / (maxIndex + 1)
-    const maxLeftPct = 100 - segmentWidthPct
+    const progress         = Math.max(0, Math.min(1, -value / totalDragRange))
+    const segmentWidthPct  = 100 / (maxIndex + 1)
+    const maxLeftPct       = 100 - segmentWidthPct
     return `${progress * maxLeftPct}%`
   })
 
@@ -91,43 +89,23 @@ export function FeaturedProjectsCarousel() {
     [maxIndex]
   )
 
-  const goTo = useCallback(
-    (value: number) => {
-      setIndex(clampIndex(value))
-    },
-    [clampIndex]
-  )
-
-  const prev = useCallback(() => {
-    goTo(currentIndex - 1)
-  }, [currentIndex, goTo])
-
-  const next = useCallback(() => {
-    goTo(currentIndex + 1)
-  }, [currentIndex, goTo])
+  const goTo = useCallback((v: number) => setIndex(clampIndex(v)), [clampIndex])
+  const prev = useCallback(() => goTo(currentIndex - 1), [currentIndex, goTo])
+  const next = useCallback(() => goTo(currentIndex + 1), [currentIndex, goTo])
 
   useEffect(() => {
     if (!stepWidth) return
-
-    if (!hasSyncedInitialPositionRef.current) {
+    if (!hasSyncedRef.current) {
       x.set(targetX)
-      hasSyncedInitialPositionRef.current = true
+      hasSyncedRef.current = true
       return
     }
-
-    const controls = animate(x, targetX, {
-      duration: 1.1,
-      ease: [0.22, 1, 0.36, 1],
-    })
-
+    const controls = animate(x, targetX, { duration: 0.85, ease: ease.out })
     return () => controls.stop()
   }, [targetX, stepWidth, x])
 
   const releaseClickLock = useCallback(() => {
-    if (preventClickTimeoutRef.current) {
-      clearTimeout(preventClickTimeoutRef.current)
-    }
-
+    if (preventClickTimeoutRef.current) clearTimeout(preventClickTimeoutRef.current)
     preventClickTimeoutRef.current = setTimeout(() => {
       preventCardClickRef.current = false
     }, 140)
@@ -138,40 +116,46 @@ export function FeaturedProjectsCarousel() {
   }, [])
 
   const handleDragEnd = useCallback(
-    (_event: MouseEvent | TouchEvent | PointerEvent, info: DragInfo) => {
+    (_e: MouseEvent | TouchEvent | PointerEvent, info: DragInfo) => {
       releaseClickLock()
-
       if (!stepWidth) return
 
       const distanceThreshold = stepWidth * 0.18
       const velocityThreshold = 500
 
       const projectedIndex = clampIndex(Math.round(-x.get() / stepWidth))
-      const draggedFarEnough = Math.abs(info.offset.x) >= distanceThreshold
-      const movedFastEnough = Math.abs(info.velocity.x) >= velocityThreshold
+      const draggedFar     = Math.abs(info.offset.x) >= distanceThreshold
+      const movedFast      = Math.abs(info.velocity.x) >= velocityThreshold
 
-      if (!draggedFarEnough && !movedFastEnough) {
+      if (!draggedFar && !movedFast) {
         goTo(currentIndex)
         return
       }
 
       if (info.offset.x < 0 || info.velocity.x < -velocityThreshold) {
-        goTo(
-          projectedIndex > currentIndex ? projectedIndex : currentIndex + 1
-        )
+        goTo(projectedIndex > currentIndex ? projectedIndex : currentIndex + 1)
         return
       }
 
       if (info.offset.x > 0 || info.velocity.x > velocityThreshold) {
-        goTo(
-          projectedIndex < currentIndex ? projectedIndex : currentIndex - 1
-        )
+        goTo(projectedIndex < currentIndex ? projectedIndex : currentIndex - 1)
         return
       }
 
       goTo(projectedIndex)
     },
     [clampIndex, currentIndex, goTo, releaseClickLock, stepWidth, x]
+  )
+
+  const controlButton = cn(
+    "flex size-12 items-center justify-center rounded-full",
+    "border border-[var(--border)] bg-[var(--card)]/50 text-[var(--text-muted)]",
+    "backdrop-blur-sm",
+    "transition-[border-color,background-color,color,transform] duration-300 ease-[var(--ease-premium)]",
+    "hover:border-[var(--brand-border)] hover:bg-[var(--brand)]/10 hover:text-[var(--brand)]",
+    "active:scale-95",
+    "disabled:cursor-not-allowed disabled:opacity-30",
+    "disabled:hover:border-[var(--border)] disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
   )
 
   return (
@@ -181,7 +165,6 @@ export function FeaturedProjectsCarousel() {
       aria-roledescription="carousel"
       aria-label="Featured projects"
     >
-      {/* Track */}
       <div ref={viewportRef} className="overflow-hidden">
         <motion.div
           className="flex cursor-grab select-none active:cursor-grabbing"
@@ -191,10 +174,7 @@ export function FeaturedProjectsCarousel() {
             touchAction: "pan-y",
           }}
           drag={maxIndex > 0 && stepWidth > 0 ? "x" : false}
-          dragConstraints={{
-            left: -(maxIndex * stepWidth),
-            right: 0,
-          }}
+          dragConstraints={{ left: -(maxIndex * stepWidth), right: 0 }}
           dragElastic={0.06}
           dragMomentum={false}
           onDragStart={handleDragStart}
@@ -218,35 +198,21 @@ export function FeaturedProjectsCarousel() {
         </motion.div>
       </div>
 
-      {/* Progress bar + controls */}
       <div className="flex items-center gap-6">
-        {/* Full-width progress track with smooth sliding indicator */}
         <div className="relative h-px flex-1 bg-[var(--border)]">
           <motion.div
             className="absolute top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-[var(--text)]"
-            style={{
-              left: indicatorLeft,
-              width: indicatorWidth,
-            }}
+            style={{ left: indicatorLeft, width: indicatorWidth }}
           />
         </div>
 
-        {/* Arrows */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={prev}
             disabled={currentIndex === 0}
             aria-label="Previous project"
-            className={cn(
-              "flex size-12 items-center justify-center rounded-full",
-              "border border-[var(--border)] bg-[var(--card)]/50 text-[var(--text-muted)]",
-              "backdrop-blur-sm",
-              "transition-all duration-300 ease-[var(--ease-premium)]",
-              "hover:border-[var(--brand-border)] hover:bg-[var(--brand)]/10 hover:text-[var(--brand)]",
-              "active:scale-95",
-              "disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
-            )}
+            className={controlButton}
           >
             <ArrowLeft className="size-5" />
           </button>
@@ -256,40 +222,33 @@ export function FeaturedProjectsCarousel() {
             onClick={next}
             disabled={currentIndex >= maxIndex}
             aria-label="Next project"
-            className={cn(
-              "flex size-12 items-center justify-center rounded-full",
-              "border border-[var(--border)] bg-[var(--card)]/50 text-[var(--text-muted)]",
-              "backdrop-blur-sm",
-              "transition-all duration-300 ease-[var(--ease-premium)]",
-              "hover:border-[var(--brand-border)] hover:bg-[var(--brand)]/10 hover:text-[var(--brand)]",
-              "active:scale-95",
-              "disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
-            )}
+            className={controlButton}
           >
             <ArrowRight className="size-5" />
           </button>
         </div>
       </div>
 
-      {/* Counter */}
-      <div className="flex justify-start -mt-4">
+      <div className="-mt-4 flex justify-start">
         <span
           aria-live="polite"
-          className="font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]"
+          className="font-medium text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]"
         >
           {String(currentIndex + 1).padStart(2, "0")} /{" "}
           {String(maxIndex + 1).padStart(2, "0")}
         </span>
       </div>
 
-      {/* All projects CTA */}
       <div className="flex justify-center pt-2">
         <Link
           href="/work"
-          className={cn(buttonVariants({ variant: "orange", size: "lg" }))}
+          className={cn(
+            buttonVariants({ variant: "orange", size: "lg" }),
+            "group gap-2"
+          )}
         >
           All projects
-          <ArrowUpRight className="size-4" />
+          <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       </div>
     </div>

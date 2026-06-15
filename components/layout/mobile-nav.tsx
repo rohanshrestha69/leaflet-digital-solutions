@@ -1,3 +1,4 @@
+// components/layout/mobile-nav.tsx
 "use client"
 
 import { useState } from "react"
@@ -17,44 +18,36 @@ import {
 } from "@/components/ui/sheet"
 import { buttonVariants } from "@/components/ui/button"
 import { navLinks } from "@/features/marketing/data/nav-links"
-import { premiumEase } from "@/lib/motion"
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-/* -------------------------------------------------------------------------- */
-/*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
+/* ── Variants ──────────────────────────────────────────────────── */
 
-const listVariants: Variants = {
+const listV: Variants = {
   hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.12,
-    },
-  },
+  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
 }
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
+const itemV: Variants = {
+  hidden: { opacity: 0, y: 16, filter: "blur(4px)" },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: premiumEase },
+    filter: "blur(0px)",
+    transition: { duration: 0.45, ease: ease.out },
   },
 }
 
-const footerVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
+const footerV: Variants = {
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, ease: premiumEase, delay: 0.35 },
+    transition: { duration: 0.5, ease: ease.out, delay: 0.3 },
   },
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                   Styles                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Styles ────────────────────────────────────────────────────── */
 
 const iconButton = cn(
   "inline-flex size-11 items-center justify-center rounded-md",
@@ -63,9 +56,7 @@ const iconButton = cn(
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
 )
 
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+/* ── Component ─────────────────────────────────────────────────── */
 
 export function MobileNav() {
   const pathname = usePathname()
@@ -120,13 +111,13 @@ export function MobileNav() {
           aria-label="Mobile navigation"
           initial="hidden"
           animate="show"
-          variants={listVariants}
+          variants={listV}
         >
-          {navLinks.map((link) => {
+          {navLinks.map((link, i) => {
             const isActive = isActiveLink(link.href, pathname)
 
             return (
-              <motion.div key={link.href} variants={itemVariants}>
+              <motion.div key={link.href} variants={itemV}>
                 <SheetClose>
                   <Link
                     href={link.href}
@@ -140,10 +131,15 @@ export function MobileNav() {
                         : "text-white hover:text-[var(--brand)]"
                     )}
                   >
-                    <span>{link.label}</span>
+                    <span className="flex items-center gap-4">
+                      <span className="font-medium text-[11px] text-white/20">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span>{link.label}</span>
+                    </span>
                     <ArrowUpRight
                       className={cn(
-                        "size-5 ml-2 -translate-x-1 opacity-0 transition-all duration-300 ease-[var(--ease-premium)]",
+                        "ml-2 size-5 -translate-x-1 opacity-0 transition-[transform,opacity] duration-300 ease-[var(--ease-premium)]",
                         "group-hover:translate-x-0 group-hover:opacity-100",
                         isActive && "translate-x-0 opacity-100"
                       )}
@@ -157,7 +153,7 @@ export function MobileNav() {
 
         {/* Footer CTA */}
         <motion.div
-          variants={footerVariants}
+          variants={footerV}
           initial="hidden"
           animate="show"
           className="mt-8 flex flex-col gap-4 border-t border-white/[0.06] pt-6"
@@ -175,7 +171,7 @@ export function MobileNav() {
             </Link>
           </SheetClose>
 
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
+          <p className="font-medium text-[10px] uppercase tracking-[0.22em] text-white/40">
             © {new Date().getFullYear()} Leaflet Digital
           </p>
         </motion.div>
@@ -184,13 +180,26 @@ export function MobileNav() {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Active link resolver ───────────────────────────────────────── */
 
+/**
+ * Mirror of the desktop header logic, but without hash awareness
+ * (mobile menu always closes & navigates rather than tracking sections).
+ */
 function isActiveLink(href: string, pathname: string) {
   const hashIndex = href.indexOf("#")
-  if (hashIndex === -1) return pathname === href
-  const path = href.slice(0, hashIndex) || "/"
-  return pathname === path
+
+  /* Hash anchor — only active on the exact root path */
+  if (hashIndex !== -1) {
+    const path = href.slice(0, hashIndex) || "/"
+    return pathname === path
+  }
+
+  /* Special-case home — never matches nested routes */
+  if (href === "/") {
+    return pathname === "/"
+  }
+
+  /* Exact match OR nested route */
+  return pathname === href || pathname.startsWith(`${href}/`)
 }

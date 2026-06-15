@@ -1,3 +1,4 @@
+// features/projects/components/details/project-detail-metrics.tsx
 "use client"
 
 import { motion } from "motion/react"
@@ -5,12 +6,8 @@ import { motion } from "motion/react"
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import type { Project } from "@/features/marketing/data/projects-page"
-import { sectionViewport } from "@/lib/motion"
-import {
-  sectionContainer,
-  itemVariants,
-  gridContainer,
-} from "../project-variants"
+import { viewport } from "@/lib/motion"
+import { sectionV, itemBlurV, gridV } from "../project-variants"
 import { ProjectMetricCard } from "../project-metric-card"
 
 export function ProjectDetailMetrics({
@@ -22,13 +19,13 @@ export function ProjectDetailMetrics({
     <section className="relative border-b border-[var(--border)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
           <motion.div
-            variants={itemVariants}
+            variants={itemBlurV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <SectionHeading>
@@ -36,13 +33,13 @@ export function ProjectDetailMetrics({
               <br />
               numbers.
             </SectionHeading>
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--brand)] md:text-right">
+            <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)] md:text-right">
               03 / Impact
             </span>
           </motion.div>
 
           <motion.div
-            variants={gridContainer}
+            variants={gridV}
             className="mt-14 grid grid-cols-2 gap-4 md:mt-20 md:gap-5 lg:grid-cols-4"
           >
             {metrics.map((metric) => (

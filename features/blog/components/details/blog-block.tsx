@@ -1,8 +1,11 @@
+// features/blog/components/details/blog-block.tsx
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight, Info, Sparkles, AlertTriangle } from "lucide-react"
+import { motion } from "motion/react"
 
 import {
   Accordion,
@@ -26,47 +29,30 @@ import type {
   BlogTextBlock,
   BlogVideoBlock,
 } from "@/features/marketing/data/blog-data"
+import { ease } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
 
-/* -------------------------------------------------------------------------- */
-/*                                  Dispatcher                                */
-/* -------------------------------------------------------------------------- */
+/* ── Dispatcher ───────────────────────────────────────────────── */
 
 export function BlogBlock({ block }: { block: BlogContentBlock }) {
   switch (block.type) {
-    case "text":
-      return <TextBlock block={block} />
-    case "heading":
-      return <HeadingBlock block={block} />
-    case "image":
-      return <ImageBlock block={block} />
-    case "gallery":
-      return <GalleryBlock block={block} />
-    case "quote":
-      return <QuoteBlock block={block} />
-    case "list":
-      return <ListBlock block={block} />
-    case "callout":
-      return <CalloutBlock block={block} />
-    case "code":
-      return <CodeBlock block={block} />
-    case "buttons":
-      return <ButtonsBlock block={block} />
-    case "video":
-      return <VideoBlock block={block} />
-    case "faq":
-      return <FaqBlock block={block} />
-    case "divider":
-      return <DividerBlock block={block} />
-    default:
-      return null
+    case "text":     return <TextBlock     block={block} />
+    case "heading":  return <HeadingBlock  block={block} />
+    case "image":    return <ImageBlock    block={block} />
+    case "gallery":  return <GalleryBlock  block={block} />
+    case "quote":    return <QuoteBlock    block={block} />
+    case "list":     return <ListBlock     block={block} />
+    case "callout":  return <CalloutBlock  block={block} />
+    case "code":     return <CodeBlock     block={block} />
+    case "buttons":  return <ButtonsBlock  block={block} />
+    case "video":    return <VideoBlock    block={block} />
+    case "faq":      return <FaqBlock      block={block} />
+    case "divider":  return <DividerBlock  block={block} />
+    default:         return null
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                    Text                                    */
-/* -------------------------------------------------------------------------- */
+/* ── Text ─────────────────────────────────────────────────────── */
 
 function TextBlock({ block }: { block: BlogTextBlock }) {
   const paragraphs = Array.isArray(block.body) ? block.body : [block.body]
@@ -85,9 +71,7 @@ function TextBlock({ block }: { block: BlogTextBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Heading                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Heading ──────────────────────────────────────────────────── */
 
 function HeadingBlock({ block }: { block: BlogHeadingBlock }) {
   const Tag = `h${block.level ?? 3}` as "h2" | "h3" | "h4"
@@ -111,16 +95,16 @@ function HeadingBlock({ block }: { block: BlogHeadingBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                    Image                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Image ────────────────────────────────────────────────────── */
 
 function ImageBlock({ block }: { block: BlogImageBlock }) {
   return (
     <figure className="flex flex-col gap-3">
-      <div
+      <motion.div
+        whileHover={{ scale: 1.005 }}
+        transition={{ duration: 0.4, ease: ease.smooth }}
         className={cn(
-          "relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)]",
+          "group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)]",
           block.aspect ?? "aspect-[16/9]"
         )}
       >
@@ -130,11 +114,11 @@ function ImageBlock({ block }: { block: BlogImageBlock }) {
           fill
           sizes="(min-width: 1024px) 65vw, 100vw"
           loading="lazy"
-          className="object-cover"
+          className="object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.03]"
         />
-      </div>
+      </motion.div>
       {block.caption && (
-        <figcaption className="text-center font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+        <figcaption className="text-center font-medium text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
           {block.caption}
         </figcaption>
       )}
@@ -142,9 +126,7 @@ function ImageBlock({ block }: { block: BlogImageBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Gallery                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Gallery ──────────────────────────────────────────────────── */
 
 function GalleryBlock({ block }: { block: BlogGalleryBlock }) {
   const cols = block.columns === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
@@ -152,12 +134,14 @@ function GalleryBlock({ block }: { block: BlogGalleryBlock }) {
   return (
     <div className={cn("grid grid-cols-1 gap-4 md:gap-5", cols)}>
       {block.images.map((img, i) => (
-        <div
+        <motion.div
           key={i}
+          whileHover={{ y: -2 }}
+          transition={{ duration: 0.3, ease: ease.smooth }}
           className={cn(
-            "relative aspect-[4/3] overflow-hidden rounded-[var(--radius-xl)]",
+            "group relative aspect-[4/3] overflow-hidden rounded-[var(--radius-xl)]",
             "border border-[var(--border)]",
-            "transition-colors duration-300 ease-[var(--ease-premium)]",
+            "transition-[border-color] duration-300 ease-[var(--ease-premium)]",
             "hover:border-[var(--border-strong)]"
           )}
         >
@@ -167,33 +151,37 @@ function GalleryBlock({ block }: { block: BlogGalleryBlock }) {
             fill
             sizes="(min-width: 1024px) 33vw, 50vw"
             loading="lazy"
-            className="object-cover transition-transform duration-700 ease-[var(--ease-premium)] hover:scale-[1.04]"
+            className="object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.05]"
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                   Quote                                    */
-/* -------------------------------------------------------------------------- */
+/* ── Quote ────────────────────────────────────────────────────── */
 
 function QuoteBlock({ block }: { block: BlogQuoteBlock }) {
   return (
     <blockquote
       className={cn(
-        "flex flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40",
+        "relative flex flex-col gap-4 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40",
         "p-8 md:p-10"
       )}
     >
-      <p className="font-heading text-[20px] font-medium leading-snug tracking-tight text-[var(--text)] md:text-[26px]">
+      {/* Subtle radial glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(248,130,33,0.06),transparent_55%)]"
+      />
+
+      <p className="relative font-heading text-[20px] font-medium leading-snug tracking-tight text-[var(--text)] md:text-[26px]">
         <span className="text-[var(--brand)]">&ldquo;</span>
         {block.text}
         <span className="text-[var(--brand)]">&rdquo;</span>
       </p>
       {block.author && (
-        <cite className="font-mono text-[10px] uppercase not-italic tracking-[0.22em] text-[var(--text-subtle)]">
+        <cite className="relative font-medium text-[12px] uppercase not-italic tracking-[0.22em] text-[var(--text-subtle)]">
           — {block.author}
         </cite>
       )}
@@ -201,9 +189,7 @@ function QuoteBlock({ block }: { block: BlogQuoteBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                    List                                    */
-/* -------------------------------------------------------------------------- */
+/* ── List ─────────────────────────────────────────────────────── */
 
 function ListBlock({ block }: { block: BlogListBlock }) {
   const Tag = block.ordered ? "ol" : "ul"
@@ -216,7 +202,7 @@ function ListBlock({ block }: { block: BlogListBlock }) {
           className="flex items-start gap-3 text-[15px] leading-relaxed text-[var(--text-muted)] md:text-[17px]"
         >
           {block.ordered ? (
-            <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--brand-border)] bg-[var(--brand)]/10 font-mono text-[11px] font-semibold text-[var(--brand)]">
+            <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--brand-border)] bg-[var(--brand)]/10 font-medium text-[11px] font-semibold text-[var(--brand)]">
               {i + 1}
             </span>
           ) : (
@@ -229,33 +215,31 @@ function ListBlock({ block }: { block: BlogListBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Callout                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Callout ──────────────────────────────────────────────────── */
 
 function CalloutBlock({ block }: { block: BlogCalloutBlock }) {
   const variant = block.variant ?? "info"
 
   const variantStyles = {
     info: {
-      border: "border-[var(--border)]",
-      bg: "bg-[var(--card)]/40",
-      icon: "text-[var(--text-muted)]",
-      iconBg: "bg-[var(--background)]",
+      border:     "border-[var(--border)]",
+      bg:         "bg-[var(--card)]/40",
+      icon:       "text-[var(--text-muted)]",
+      iconBg:     "bg-[var(--background)]",
       iconBorder: "border-[var(--border)]",
     },
     brand: {
-      border: "border-[var(--brand-border)]",
-      bg: "bg-[var(--brand)]/[0.06]",
-      icon: "text-[var(--brand)]",
-      iconBg: "bg-[var(--brand)]/10",
+      border:     "border-[var(--brand-border)]",
+      bg:         "bg-[var(--brand)]/[0.06]",
+      icon:       "text-[var(--brand)]",
+      iconBg:     "bg-[var(--brand)]/10",
       iconBorder: "border-[var(--brand-border)]",
     },
     warning: {
-      border: "border-amber-500/30",
-      bg: "bg-amber-500/[0.04]",
-      icon: "text-amber-400",
-      iconBg: "bg-amber-500/10",
+      border:     "border-amber-500/30",
+      bg:         "bg-amber-500/[0.04]",
+      icon:       "text-amber-400",
+      iconBg:     "bg-amber-500/10",
       iconBorder: "border-amber-500/30",
     },
   } as const
@@ -272,7 +256,9 @@ function CalloutBlock({ block }: { block: BlogCalloutBlock }) {
         styles.bg
       )}
     >
-      <div
+      <motion.div
+        whileHover={{ scale: 1.08, rotate: 5 }}
+        transition={{ duration: 0.3, ease: ease.spring }}
         className={cn(
           "inline-flex size-9 shrink-0 items-center justify-center rounded-full border",
           styles.iconBg,
@@ -281,7 +267,7 @@ function CalloutBlock({ block }: { block: BlogCalloutBlock }) {
         )}
       >
         <Icon className="size-4" strokeWidth={2.25} />
-      </div>
+      </motion.div>
       <div className="flex flex-col gap-2">
         {block.title && (
           <p className="font-heading text-[15px] font-semibold tracking-tight text-[var(--text)] md:text-[16px]">
@@ -296,34 +282,26 @@ function CalloutBlock({ block }: { block: BlogCalloutBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                    Code                                    */
-/* -------------------------------------------------------------------------- */
+/* ── Code ─────────────────────────────────────────────────────── */
 
 function CodeBlock({ block }: { block: BlogCodeBlock }) {
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/60"
-      )}
-    >
+    <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/60">
       {block.language && (
         <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+          <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
             {block.language}
           </span>
         </div>
       )}
       <pre className="overflow-x-auto px-5 py-5 text-[13px] leading-relaxed text-[var(--text)] md:text-[14px]">
-        <code className="font-mono">{block.code}</code>
+        <code className="font-medium">{block.code}</code>
       </pre>
     </div>
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Buttons                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Buttons ──────────────────────────────────────────────────── */
 
 function ButtonsBlock({ block }: { block: BlogButtonsBlock }) {
   return (
@@ -337,31 +315,25 @@ function ButtonsBlock({ block }: { block: BlogButtonsBlock }) {
           className={cn(
             buttonVariants({
               variant: action.variant ?? "orange",
-              size: "lg",
+              size:    "lg",
             }),
-            "gap-2"
+            "group gap-2"
           )}
         >
           {action.label}
-          <ArrowUpRight className="size-4" />
+          <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       ))}
     </div>
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                   Video                                    */
-/* -------------------------------------------------------------------------- */
+/* ── Video ────────────────────────────────────────────────────── */
 
 function VideoBlock({ block }: { block: BlogVideoBlock }) {
   return (
     <figure className="flex flex-col gap-3">
-      <div
-        className={cn(
-          "relative aspect-video overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]"
-        )}
-      >
+      <div className="relative aspect-video overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]">
         <video
           src={block.src}
           poster={block.poster}
@@ -372,7 +344,7 @@ function VideoBlock({ block }: { block: BlogVideoBlock }) {
         />
       </div>
       {block.caption && (
-        <figcaption className="text-center font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+        <figcaption className="text-center font-medium text-[11px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
           {block.caption}
         </figcaption>
       )}
@@ -380,9 +352,7 @@ function VideoBlock({ block }: { block: BlogVideoBlock }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                    FAQ                                     */
-/* -------------------------------------------------------------------------- */
+/* ── FAQ ──────────────────────────────────────────────────────── */
 
 function FaqBlock({ block }: { block: BlogFaqBlock }) {
   const [openFaq, setOpenFaq] = useState<string[]>(["faq-0"])
@@ -397,50 +367,42 @@ function FaqBlock({ block }: { block: BlogFaqBlock }) {
 
       <div className="border-t border-[var(--border)]">
         <Accordion value={openFaq} onValueChange={setOpenFaq}>
-          {block.faqs.map((faq, i) => {
-            const number = String(i + 1).padStart(2, "0")
-            return (
-              <AccordionItem
-                key={faq.question}
-                value={`faq-${i}`}
-                className="border-b border-[var(--border)]"
+          {block.faqs.map((faq, i) => (
+            <AccordionItem
+              key={faq.question}
+              value={`faq-${i}`}
+              className="border-b border-[var(--border)]"
+            >
+              <AccordionTrigger
+                className={cn(
+                  "group flex w-full items-start gap-5 py-5 text-left no-underline",
+                  "transition-colors duration-300 ease-[var(--ease-premium)]",
+                  "hover:no-underline data-[state=open]:text-[var(--brand)]"
+                )}
               >
-                <AccordionTrigger
-                  className={cn(
-                    "group flex w-full items-start gap-5 py-5 text-left no-underline",
-                    "transition-colors duration-300 ease-[var(--ease-premium)]",
-                    "hover:no-underline data-[state=open]:text-[var(--brand)]"
-                  )}
-                >
-                  <span className="mt-1 font-mono text-[11px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
-                    {number}
-                  </span>
-                  <span className="flex-1 font-heading text-[16px] font-semibold tracking-tight text-[var(--text)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)] md:text-[18px]">
-                    {faq.question}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="pb-6 pl-[40px] pr-4 text-[14px] leading-relaxed text-[var(--text-muted)] md:text-[15px]">
-                  <p className="max-w-2xl">{faq.answer}</p>
-                </AccordionContent>
-              </AccordionItem>
-            )
-          })}
+                <span className="mt-1 font-medium text-[11px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="flex-1 font-heading text-[16px] font-semibold tracking-tight text-[var(--text)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)] md:text-[18px]">
+                  {faq.question}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pb-6 pl-[40px] pr-4 text-[14px] leading-relaxed text-[var(--text-muted)] md:text-[15px]">
+                <p className="max-w-2xl">{faq.answer}</p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
         </Accordion>
       </div>
     </div>
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Divider                                   */
-/* -------------------------------------------------------------------------- */
+/* ── Divider ──────────────────────────────────────────────────── */
 
 function DividerBlock({ block: _block }: { block: BlogDividerBlock }) {
   return (
-    <div
-      aria-hidden
-      className="my-4 flex items-center justify-center"
-    >
+    <div aria-hidden className="my-4 flex items-center justify-center">
       <span className="inline-flex h-1 w-1 rounded-full bg-[var(--brand)]" />
       <span className="mx-1.5 inline-flex h-1 w-1 rounded-full bg-[var(--brand)]/60" />
       <span className="inline-flex h-1 w-1 rounded-full bg-[var(--brand)]/30" />

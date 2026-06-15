@@ -1,3 +1,4 @@
+// features/blog/pages/blog-detail-page.tsx
 import { notFound } from "next/navigation"
 
 import {
@@ -6,13 +7,11 @@ import {
 } from "@/features/marketing/data/blog-data"
 import { ContactForm } from "@/components/shared/contact-form"
 
-import { BlogDetailHero } from "../components/details/blog-detail-hero"
-import { BlogDetailBody } from "../components/details/blog-detail-body"
+import { BlogDetailHero }    from "../components/details/blog-detail-hero"
+import { BlogDetailBody }    from "../components/details/blog-detail-body"
 import { BlogDetailRelated } from "../components/details/blog-detail-related"
 
-type Props = {
-  slug: string
-}
+type Props = { slug: string }
 
 export function BlogDetailPage({ slug }: Props) {
   const post = getBlogPost(slug)

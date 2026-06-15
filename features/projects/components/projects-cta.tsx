@@ -1,7 +1,7 @@
+// features/projects/components/projects-cta.tsx
 "use client"
 
 import { CTASection } from "./cta-section"
-
 
 export function ProjectsCTA() {
   return (
@@ -18,8 +18,8 @@ export function ProjectsCTA() {
       }
       description="We take on a limited number of projects each quarter to ensure focus and quality. Get in touch early."
       actions={[
-        { label: "View services", href: "/services", variant: "outlineDark" },
-        { label: "Start a project", href: "/contact", variant: "orange" },
+        { label: "View services",   href: "/services", variant: "outlineDark" },
+        { label: "Start a project", href: "/contact",  variant: "orange" },
       ]}
       withDots
       align="center"

@@ -1,7 +1,8 @@
+// features/blog/components/details/blog-detail-body.tsx
 "use client"
 
 import { useMemo, useState } from "react"
-import { motion } from "motion/react"
+import { motion, type Variants } from "motion/react"
 
 import {
   Accordion,
@@ -11,19 +12,90 @@ import {
 } from "@/components/ui/accordion"
 import { Container } from "@/components/shared/container"
 import type { BlogPost } from "@/features/marketing/data/blog-data"
-import { sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 import { useActiveSection } from "../../hooks/use-active-section"
-import { sectionContainer, itemVariants } from "../blog-variants"
 import { BlogBlock } from "./blog-block"
 import { BlogToc } from "./blog-toc"
 import { BlogSidebar } from "./blog-sidebar"
 
+/* ── Variants ─────────────────────────────────────────────────── */
+
+const layoutV: Variants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+}
+
+const sideV: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: ease.out },
+  },
+}
+
+const articleV: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: ease.out },
+  },
+}
+
+const sectionV: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: ease.out },
+  },
+}
+
+const blockV: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: ease.out },
+  },
+}
+
+const blocksContainerV: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+}
+
+const headingV: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: ease.out },
+  },
+}
+
+const faqItemV: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: ease.out },
+  },
+}
+
+const faqListV: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
+}
+
+/* ── Component ────────────────────────────────────────────────── */
+
 export function BlogDetailBody({ post }: { post: BlogPost }) {
   const hasStandaloneFaqs = post.faqs && post.faqs.length > 0
 
-  /* Controlled accordion — start with first item open */
   const [openFaq, setOpenFaq] = useState<string[]>(
     hasStandaloneFaqs ? ["faq-0"] : []
   )
@@ -49,16 +121,16 @@ export function BlogDetailBody({ post }: { post: BlogPost }) {
     <section className="relative border-b border-[var(--border)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={layoutV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
           className="grid gap-12 lg:grid-cols-[220px_minmax(0,1fr)_260px] lg:gap-16"
         >
           {/* TOC */}
           {tocItems.length > 0 && (
             <motion.aside
-              variants={itemVariants}
+              variants={sideV}
               className="hidden lg:block lg:sticky lg:top-28 lg:self-start"
             >
               <BlogToc items={tocItems} activeId={activeId} />
@@ -67,45 +139,67 @@ export function BlogDetailBody({ post }: { post: BlogPost }) {
 
           {/* Article body */}
           <motion.article
-            variants={itemVariants}
+            variants={articleV}
             className={cn(
               "flex min-w-0 flex-col gap-14",
               tocItems.length === 0 && "lg:col-span-2"
             )}
           >
             {post.sections.map((section) => (
-              <section
+              <motion.section
                 key={section.id}
                 id={section.id}
+                variants={sectionV}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.1, margin: "0px 0px -10% 0px" }}
                 className="scroll-mt-28 flex flex-col gap-6"
               >
-                <h2 className="font-heading text-[24px] font-semibold tracking-tight text-[var(--text)] md:text-[30px]">
+                <motion.h2
+                  variants={headingV}
+                  className="font-heading text-[24px] font-semibold tracking-tight text-[var(--text)] md:text-[30px]"
+                >
                   {section.heading}
-                </h2>
+                </motion.h2>
 
-                {section.blocks.map((block, i) => (
-                  <BlogBlock key={i} block={block} />
-                ))}
-              </section>
+                <motion.div
+                  variants={blocksContainerV}
+                  className="flex flex-col gap-6"
+                >
+                  {section.blocks.map((block, i) => (
+                    <motion.div key={i} variants={blockV}>
+                      <BlogBlock block={block} />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.section>
             ))}
 
-            {/* Standalone FAQ section */}
+            {/* Standalone FAQ */}
             {hasStandaloneFaqs && (
-              <section
+              <motion.section
                 id="faq"
+                variants={sectionV}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.1 }}
                 className="scroll-mt-28 flex flex-col gap-6 pt-4"
               >
-                <h2 className="font-heading text-[24px] font-semibold tracking-tight text-[var(--text)] md:text-[30px]">
+                <motion.h2
+                  variants={headingV}
+                  className="font-heading text-[24px] font-semibold tracking-tight text-[var(--text)] md:text-[30px]"
+                >
                   Frequently asked questions
-                </h2>
+                </motion.h2>
 
-                <div className="border-t border-[var(--border)]">
+                <motion.div
+                  variants={faqListV}
+                  className="border-t border-[var(--border)]"
+                >
                   <Accordion value={openFaq} onValueChange={setOpenFaq}>
-                    {post.faqs!.map((faq, i) => {
-                      const number = String(i + 1).padStart(2, "0")
-                      return (
+                    {post.faqs!.map((faq, i) => (
+                      <motion.div key={faq.question} variants={faqItemV}>
                         <AccordionItem
-                          key={faq.question}
                           value={`faq-${i}`}
                           className="border-b border-[var(--border)]"
                         >
@@ -116,8 +210,8 @@ export function BlogDetailBody({ post }: { post: BlogPost }) {
                               "hover:no-underline data-[state=open]:text-[var(--brand)]"
                             )}
                           >
-                            <span className="mt-1 font-mono text-[11px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
-                              {number}
+                            <span className="mt-1 font-medium text-[11px] tabular-nums tracking-[0.18em] text-[var(--text-subtle)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)]">
+                              {String(i + 1).padStart(2, "0")}
                             </span>
                             <span className="flex-1 font-heading text-[16px] font-semibold tracking-tight text-[var(--text)] transition-colors duration-300 group-hover:text-[var(--brand)] group-data-[state=open]:text-[var(--brand)] md:text-[18px]">
                               {faq.question}
@@ -127,17 +221,17 @@ export function BlogDetailBody({ post }: { post: BlogPost }) {
                             <p className="max-w-2xl">{faq.answer}</p>
                           </AccordionContent>
                         </AccordionItem>
-                      )
-                    })}
+                      </motion.div>
+                    ))}
                   </Accordion>
-                </div>
-              </section>
+                </motion.div>
+              </motion.section>
             )}
           </motion.article>
 
-          {/* Right sidebar */}
+          {/* Sidebar */}
           <motion.aside
-            variants={itemVariants}
+            variants={sideV}
             className="lg:sticky lg:top-28 lg:self-start"
           >
             <BlogSidebar />

@@ -1,3 +1,4 @@
+// features/projects/components/details/project-detail-next.tsx
 "use client"
 
 import Link from "next/link"
@@ -7,13 +8,11 @@ import { motion } from "motion/react"
 
 import { Container } from "@/components/shared/container"
 import type { Project } from "@/features/marketing/data/projects-page"
-import { sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
-import { sectionContainer, itemVariants } from "../project-variants"
+import { sectionV, itemV, itemBlurV } from "../project-variants"
 
-type Props = {
-  next: Project
-}
+type Props = { next: Project }
 
 export function ProjectDetailNext({ next }: Props) {
   return (
@@ -21,22 +20,19 @@ export function ProjectDetailNext({ next }: Props) {
       <Container wide>
         <Link href={`/work/${next.slug}`} className="group/next block">
           <motion.div
-            variants={sectionContainer}
+            variants={sectionV}
             initial="hidden"
             whileInView="show"
-            viewport={sectionViewport}
+            viewport={viewport.section}
           >
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
-            >
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--brand)]">
+            <motion.div variants={itemV}>
+              <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)]">
                 Up next / {next.year}
               </span>
             </motion.div>
 
             <motion.div
-              variants={itemVariants}
+              variants={itemBlurV}
               className="mt-6 flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-12"
             >
               <h2
@@ -48,21 +44,22 @@ export function ProjectDetailNext({ next }: Props) {
                 {next.title}
               </h2>
 
-              <div
+              <motion.div
                 className={cn(
                   "flex size-14 shrink-0 items-center justify-center rounded-full",
                   "border border-[var(--border)] bg-[var(--card)] text-[var(--text-muted)]",
-                  "transition-all duration-400 ease-[var(--ease-premium)]",
-                  "group-hover/next:-translate-y-1 group-hover/next:translate-x-1",
+                  "transition-[border-color,background-color,color] duration-400 ease-[var(--ease-premium)]",
                   "group-hover/next:border-[var(--brand-border)] group-hover/next:bg-[var(--brand)]/10 group-hover/next:text-[var(--brand)]"
                 )}
+                whileHover={{ x: 4, y: -4 }}
+                transition={{ duration: 0.3, ease: ease.smooth }}
               >
                 <ArrowRight className="size-5" />
-              </div>
+              </motion.div>
             </motion.div>
 
             <motion.div
-              variants={itemVariants}
+              variants={itemV}
               className="mt-10 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)]"
               style={{ background: next.tone ?? "var(--card)" }}
             >
@@ -76,8 +73,12 @@ export function ProjectDetailNext({ next }: Props) {
                   className={cn(
                     "absolute inset-0 h-full w-full object-cover",
                     "transition-transform duration-[1200ms] ease-[var(--ease-premium)]",
-                    "group-hover/next:scale-[1.03]"
+                    "group-hover/next:scale-[1.04]"
                   )}
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover/next:opacity-100"
                 />
                 <div
                   aria-hidden

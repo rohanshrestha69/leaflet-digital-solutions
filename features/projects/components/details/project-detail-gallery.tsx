@@ -1,3 +1,4 @@
+// features/projects/components/details/project-detail-gallery.tsx
 "use client"
 
 import { Container } from "@/components/shared/container"

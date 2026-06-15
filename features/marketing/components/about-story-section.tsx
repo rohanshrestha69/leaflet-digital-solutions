@@ -1,3 +1,4 @@
+// features/marketing/components/about-story-section.tsx
 "use client"
 
 import { Beaker, Rocket, Zap, type LucideIcon } from "lucide-react"
@@ -6,75 +7,52 @@ import { motion, type Variants } from "motion/react"
 import { Container } from "@/components/shared/container"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { storyCards } from "@/features/marketing/data/story"
-import { premiumEase, sectionViewport } from "@/lib/motion"
+import { ease, viewport } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-/* -------------------------------------------------------------------------- */
-/*                                    Data                                    */
-/* -------------------------------------------------------------------------- */
-
 const icons: Record<string, LucideIcon> = {
-  spark: Zap,
+  spark:      Zap,
   experiment: Beaker,
-  evolution: Rocket,
+  evolution:  Rocket,
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
+/* ── Variants ─────────────────────────────────────────────────────── */
 
-const sectionContainer: Variants = {
+const sectionV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
-  },
+  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
 }
 
-const headerVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: premiumEase },
-  },
+const headerV: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
 }
 
-const cardsContainer: Variants = {
+const cardsV: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.2 },
-  },
+  show:   { transition: { staggerChildren: 0.09, delayChildren: 0.2 } },
 }
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: premiumEase },
-  },
+const cardV: Variants = {
+  hidden: { opacity: 0, y: 28, scale: 0.97 },
+  show:   { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: ease.out } },
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+/* ── Component ────────────────────────────────────────────────────── */
 
 export function AboutStorySection() {
   return (
-    <section
-      id="about"
-      className="relative bg-[var(--background)] py-20 md:py-28"
-    >
+    <section id="about" className="relative bg-[var(--background)] py-20 md:py-28">
       <Container wide>
         <motion.div
-          variants={sectionContainer}
+          variants={sectionV}
           initial="hidden"
           whileInView="show"
-          viewport={sectionViewport}
+          viewport={viewport.section}
         >
           {/* Header */}
           <motion.div
-            variants={headerVariants}
+            variants={headerV}
             className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
           >
             <SectionHeading>
@@ -83,51 +61,53 @@ export function AboutStorySection() {
               Built for growth.
             </SectionHeading>
             <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-muted)] md:text-right">
-              A modern studio model — engineered for clarity, speed, and the
-              kind of work that compounds long after launch.
+              A modern studio model — engineered for clarity, speed, and the kind
+              of work that compounds long after launch.
             </p>
           </motion.div>
 
           {/* Cards */}
           <motion.div
-            variants={cardsContainer}
+            variants={cardsV}
             className="mt-14 grid gap-5 md:mt-20 md:grid-cols-3 md:gap-6"
           >
-            {storyCards.map((card, index) => {
-              const Icon = icons[card.icon]
-              const number = String(index + 1).padStart(2, "0")
+            {storyCards.map((card, i) => {
+              const Icon   = icons[card.icon]!
+              const number = String(i + 1).padStart(2, "0")
 
               return (
                 <motion.article
                   key={card.title}
-                  variants={cardVariants}
+                  variants={cardV}
                   className={cn(
-                    "group relative flex flex-col overflow-hidden rounded-[var(--radius-xl)]",
-                    "border border-[var(--border)] bg-[var(--card)]/40",
+                    "group relative flex flex-col overflow-hidden",
+                    "rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40",
                     "p-7 md:p-8",
-                    "transition-colors duration-300 ease-[var(--ease-premium)]",
-                    "hover:border-[var(--border-strong)]"
+                    "transition-[border-color,background-color] duration-300 ease-[var(--ease-premium)]",
+                    "hover:border-[var(--border-strong)]",
                   )}
+                  whileHover={{ y: -2 }}
+                  transition={{ duration: 0.25, ease: ease.smooth }}
                 >
-                  {/* Top row: number + icon */}
+                  {/* Top row */}
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+                    <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
                       {number}
                     </span>
 
-                    <span
+                    <motion.span
                       className={cn(
                         "inline-flex size-10 items-center justify-center rounded-full",
                         "border border-[var(--brand-border)] bg-[var(--brand)]/10 text-[var(--brand)]",
-                        "transition-transform duration-500 ease-[var(--ease-premium)]",
-                        "group-hover:scale-110"
                       )}
+                      whileHover={{ scale: 1.12, rotate: 8 }}
+                      transition={{ duration: 0.35, ease: ease.spring }}
                     >
                       <Icon className="size-4" strokeWidth={2} />
-                    </span>
+                    </motion.span>
                   </div>
 
-                  {/* Title + description */}
+                  {/* Body */}
                   <div className="mt-12 md:mt-16">
                     <h3 className="font-heading text-[22px] font-semibold tracking-tight text-[var(--text)] md:text-[26px]">
                       {card.title}
@@ -137,10 +117,10 @@ export function AboutStorySection() {
                     </p>
                   </div>
 
-                  {/* Subtle hover glow */}
+                  {/* Hover glow */}
                   <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(248,130,33,0.08),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(248,130,33,0.09),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   />
                 </motion.article>
               )

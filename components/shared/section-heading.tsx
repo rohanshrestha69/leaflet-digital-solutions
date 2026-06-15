@@ -1,3 +1,4 @@
+// components/shared/section-heading.tsx
 import { cn } from "@/lib/utils"
 
 export function SectionHeading({
