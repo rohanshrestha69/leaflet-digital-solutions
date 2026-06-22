@@ -1,47 +1,54 @@
 // features/marketing/components/faq-section.tsx
-"use client"
+"use client";
 
-import { motion, type Variants } from "motion/react"
+import { motion, type Variants } from "motion/react";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { faqs } from "@/features/marketing/data/faqs"
-import { ease, viewport } from "@/lib/motion"
+} from "@/components/ui/accordion";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { faqs } from "@/features/marketing/data/faqs";
+import { ease, viewport } from "@/lib/motion";
+import { SectionLabel } from "@/components/shared/section-label";
 
 /* ── Variants ─────────────────────────────────────────────────────── */
 
 const sectionV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+};
 
 const headerV: Variants = {
   hidden: { opacity: 0, y: 22 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
+};
 
 const listV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.05, delayChildren: 0.2 } },
-}
+  show: { transition: { staggerChildren: 0.05, delayChildren: 0.2 } },
+};
 
 const itemV: Variants = {
   hidden: { opacity: 0, y: 16 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
+};
 
 /* ── Component ────────────────────────────────────────────────────── */
 
 export function FAQSection() {
   return (
-    <section id="faq" className="relative bg-[var(--background)] py-20 md:py-28">
+    <section
+      id="faq"
+      className="relative bg-[var(--background)] py-20 md:py-28"
+    >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          FAQ
+        </SectionLabel>
         <motion.div
           variants={sectionV}
           initial="hidden"
@@ -94,5 +101,5 @@ export function FAQSection() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

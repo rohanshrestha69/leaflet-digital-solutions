@@ -1,99 +1,112 @@
 // features/marketing/components/process-section.tsx
-"use client"
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { motion, type Variants } from "motion/react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion, type Variants } from "motion/react";
 
-import { ProcessWheel } from "@/components/methodology/process-wheel"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { processSteps } from "@/features/marketing/data/process"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { ProcessWheel } from "@/components/methodology/process-wheel";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { processSteps } from "@/features/marketing/data/process";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { SectionLabel } from "@/components/shared/section-label";
 
-const AUTO_INTERVAL = 4500
+const AUTO_INTERVAL = 4500;
 
 /* ── Variants ─────────────────────────────────────────────────────── */
 
 const sectionV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+};
 
 const headerV: Variants = {
   hidden: { opacity: 0, y: 22 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
+};
 
 const listV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
-}
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
+};
 
 const listItemV: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
+};
 
 const wheelV: Variants = {
   hidden: { opacity: 0, scale: 0.93 },
-  show:   { opacity: 1, scale: 1, transition: { duration: 0.85, ease: ease.out, delay: 0.2 } },
-}
+  show: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.85, ease: ease.out, delay: 0.2 },
+  },
+};
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
 
 function getRotation(index: number, stepSize: number) {
-  return -(index * stepSize + stepSize / 2)
+  return -(index * stepSize + stepSize / 2);
 }
 
 function closestRotation(prev: number, next: number) {
-  let target = next
-  while (target - prev > 180)  target -= 360
-  while (target - prev < -180) target += 360
-  return target
+  let target = next;
+  while (target - prev > 180) target -= 360;
+  while (target - prev < -180) target += 360;
+  return target;
 }
 
 /* ── Component ────────────────────────────────────────────────────── */
 
 export function ProcessSection() {
-  const stepSize = useMemo(() => 360 / processSteps.length, [])
+  const stepSize = useMemo(() => 360 / processSteps.length, []);
 
   const [state, setState] = useState({
-    activeIndex:   0,
+    activeIndex: 0,
     rotationAngle: getRotation(0, stepSize),
-  })
-  const [paused, setPaused] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  });
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectStep = useCallback(
     (next: number) => {
       setState((cur) => {
-        if (next === cur.activeIndex) return cur
+        if (next === cur.activeIndex) return cur;
         return {
-          activeIndex:   next,
-          rotationAngle: closestRotation(cur.rotationAngle, getRotation(next, stepSize)),
-        }
-      })
+          activeIndex: next,
+          rotationAngle: closestRotation(
+            cur.rotationAngle,
+            getRotation(next, stepSize),
+          ),
+        };
+      });
     },
     [stepSize],
-  )
+  );
 
   useEffect(() => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    if (paused) return
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (paused) return;
 
     timerRef.current = setInterval(() => {
       setState((cur) => {
-        const next = (cur.activeIndex + 1) % processSteps.length
+        const next = (cur.activeIndex + 1) % processSteps.length;
         return {
-          activeIndex:   next,
-          rotationAngle: closestRotation(cur.rotationAngle, getRotation(next, stepSize)),
-        }
-      })
-    }, AUTO_INTERVAL)
+          activeIndex: next,
+          rotationAngle: closestRotation(
+            cur.rotationAngle,
+            getRotation(next, stepSize),
+          ),
+        };
+      });
+    }, AUTO_INTERVAL);
 
-    return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [paused, stepSize])
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [paused, stepSize]);
 
   return (
     <section
@@ -103,10 +116,14 @@ export function ProcessSection() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setPaused(false)
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null))
+          setPaused(false);
       }}
     >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          Our Process
+        </SectionLabel>
         <motion.div
           variants={sectionV}
           initial="hidden"
@@ -131,14 +148,13 @@ export function ProcessSection() {
 
           {/* Grid */}
           <div className="mt-14 grid items-center gap-12 md:mt-20 lg:grid-cols-[minmax(0,1fr)_minmax(480px,0.95fr)] lg:gap-16">
-
             {/* Step list */}
             <motion.ol
               variants={listV}
               className="flex flex-col border-t border-[var(--border)]"
             >
               {processSteps.map((step, i) => {
-                const isActive = i === state.activeIndex
+                const isActive = i === state.activeIndex;
 
                 return (
                   <motion.li key={step.id} variants={listItemV}>
@@ -161,26 +177,38 @@ export function ProcessSection() {
                         style={{ originX: 0, width: "100%" }}
                       />
 
-                      <span className={cn(
-                        "mt-1 font-medium text-[12px] tabular-nums tracking-[0.18em] transition-colors duration-500",
-                        isActive ? "text-[var(--brand)]" : "text-[var(--text-subtle)] group-hover:text-[var(--brand)]",
-                      )}>
+                      <span
+                        className={cn(
+                          "mt-1 font-medium text-[12px] tabular-nums tracking-[0.18em] transition-colors duration-500",
+                          isActive
+                            ? "text-[var(--brand)]"
+                            : "text-[var(--text-subtle)] group-hover:text-[var(--brand)]",
+                        )}
+                      >
                         {step.index}
                       </span>
 
                       <span className="flex-1">
-                        <span className={cn(
-                          "block font-heading text-[20px] font-semibold tracking-tight transition-colors duration-500 md:text-[24px]",
-                          isActive ? "text-[var(--text)]" : "text-[var(--text-muted)] group-hover:text-[var(--text)]",
-                        )}>
+                        <span
+                          className={cn(
+                            "block font-heading text-[20px] font-semibold tracking-tight transition-colors duration-500 md:text-[24px]",
+                            isActive
+                              ? "text-[var(--text)]"
+                              : "text-[var(--text-muted)] group-hover:text-[var(--text)]",
+                          )}
+                        >
                           {step.label}
                         </span>
 
                         {/* CSS grid-rows expansion — more performant than height:auto */}
-                        <span className={cn(
-                          "grid transition-all duration-500 ease-[var(--ease-premium)]",
-                          isActive ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-                        )}>
+                        <span
+                          className={cn(
+                            "grid transition-all duration-500 ease-[var(--ease-premium)]",
+                            isActive
+                              ? "mt-3 grid-rows-[1fr] opacity-100"
+                              : "grid-rows-[0fr] opacity-0",
+                          )}
+                        >
                           <span className="min-h-0 overflow-hidden">
                             <span className="block max-w-xl text-[14px] leading-relaxed text-[var(--text-muted)]">
                               {step.description}
@@ -190,7 +218,7 @@ export function ProcessSection() {
                       </span>
                     </button>
                   </motion.li>
-                )
+                );
               })}
             </motion.ol>
 
@@ -210,5 +238,5 @@ export function ProcessSection() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

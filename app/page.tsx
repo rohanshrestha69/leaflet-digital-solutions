@@ -9,9 +9,11 @@ import {
   ProjectsSection,
   ServicesSection,
   TestimonialsSection,
-  WhyUsSection,
 } from "@/features/marketing";
 import { BlogSection } from "@/features/marketing/components/blog-section";
+import { WhiteLabelPartnershipsSection } from "@/features/marketing/components/white-label-section";
+import { WhoWeWorkWithSection } from "@/features/marketing/components/who-we-work-with-section";
+import { WhyLeafletSection } from "@/features/marketing/components/why-us/why-us-section";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -52,16 +54,18 @@ export default function Home() {
       />
       <HeroSection />
       {/* StatsStrip removed — it's part of HeroSection now */}
-      <AboutStorySection />
+      <WhoWeWorkWithSection />
       <ServicesSection />
       <ProjectsSection />
-      <WhyUsSection />
-      <ProcessSection />
+      <AboutStorySection />
+      <WhyLeafletSection />
+      {/* <ProcessSection /> */}
+      <WhiteLabelPartnershipsSection />
       <TestimonialsSection />
       <BlogSection />
       <FAQSection />
       <DualCTASection />
-      <FinalCTASection />
+      {/* <FinalCTASection /> */}
     </main>
   );
 }

@@ -1,54 +1,69 @@
-// features/marketing/components/dual-cta-section.tsx
-"use client"
+"use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react"
-import dynamic from "next/dynamic"
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
-/* -------------------------------------------------------------------------- */
-/*                              Lazy-loaded visuals                           */
-/* -------------------------------------------------------------------------- */
+/* ── Lazy visuals ────────────────────────────────────────────────── */
+
+function VisualSkeleton() {
+  return (
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(248,130,33,0.06),transparent_60%)]" />
+  );
+}
 
 const GlobeVisual = dynamic(
   () => import("./dual-cta-visuals").then((m) => m.GlobeVisual),
-  { ssr: false, loading: () => <VisualPlaceholder /> }
-)
+  { ssr: false, loading: () => <VisualSkeleton /> },
+);
 
 const MarqueeVisual = dynamic(
   () => import("./dual-cta-visuals").then((m) => m.MarqueeVisual),
-  { ssr: false, loading: () => <VisualPlaceholder /> }
-)
+  { ssr: false, loading: () => <VisualSkeleton /> },
+);
 
-function VisualPlaceholder() {
-  return (
-    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(248,130,33,0.06),transparent_60%)]" />
-  )
-}
-
-/* -------------------------------------------------------------------------- */
-/*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
+/* ── Variants ────────────────────────────────────────────────────── */
 
 const sectionV: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
 
 const cardV: Variants = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ease.out } },
+};
+
+/* ── Hook: visible in viewport ───────────────────────────────────── */
+
+function useInView<T extends HTMLElement>(threshold = 0.15) {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry?.isIntersecting ?? false),
+      { threshold },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return [ref, inView] as const;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+/* ── Component ───────────────────────────────────────────────────── */
 
 export function DualCTASection() {
   return (
@@ -69,7 +84,7 @@ export function DualCTASection() {
               href="/contact"
               button="Start a project"
               variant="orange"
-              renderVisual={(active) => active ? <GlobeVisual /> : <VisualPlaceholder />}
+              visual={<GlobeVisual />}
             />
           </motion.div>
 
@@ -81,47 +96,37 @@ export function DualCTASection() {
               href="/contact"
               button="Partner with us"
               variant="outlineDark"
-              renderVisual={(active) => active ? <MarqueeVisual /> : <VisualPlaceholder />}
+              visual={<MarqueeVisual />}
             />
           </motion.div>
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  CTA Card                                  */
-/* -------------------------------------------------------------------------- */
+/* ── CTA card ────────────────────────────────────────────────────── */
 
 type CTACardProps = {
-  label: string
-  title: ReactNode
-  body: string
-  href: string
-  button: string
-  variant: "orange" | "outlineDark"
-  renderVisual: (active: boolean) => ReactNode
-}
+  label: string;
+  title: ReactNode;
+  body: string;
+  href: string;
+  button: string;
+  variant: "orange" | "outlineDark";
+  visual: ReactNode;
+};
 
-function CTACard({ label, title, body, href, button, variant, renderVisual }: CTACardProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(false)
-
-  useEffect(() => {
-    const node = ref.current
-    if (!node) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) setActive(entry.isIntersecting)
-      },
-      { threshold: 0.15 }
-    )
-
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
+function CTACard({
+  label,
+  title,
+  body,
+  href,
+  button,
+  variant,
+  visual,
+}: CTACardProps) {
+  const [ref, inView] = useInView<HTMLElement>(0.1);
 
   return (
     <article
@@ -129,18 +134,21 @@ function CTACard({ label, title, body, href, button, variant, renderVisual }: CT
       className={cn(
         "group relative flex min-h-[420px] overflow-hidden rounded-[var(--radius-xl)]",
         "border border-[var(--border)] bg-[var(--card)]/40 p-7 md:p-10",
-        "transition-colors duration-300 ease-[var(--ease-premium)] hover:border-[var(--border-strong)]"
+        "transition-colors duration-300 ease-[var(--ease-premium)]",
+        "hover:border-[var(--border-strong)]",
       )}
     >
+      {/* Visual — only mounts when in view */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-90"
       >
-        {renderVisual(active)}
+        {inView ? visual : <VisualSkeleton />}
       </div>
 
+      {/* Content */}
       <div className="relative z-10 mt-auto max-w-sm">
-        <span className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--brand)]">
+        <span className="text-[12px] font-medium uppercase tracking-[0.22em] text-[var(--brand)]">
           {label}
         </span>
         <h3 className="mt-3 font-heading text-[24px] font-semibold leading-tight tracking-tight text-[var(--text)] md:text-[30px]">
@@ -149,11 +157,14 @@ function CTACard({ label, title, body, href, button, variant, renderVisual }: CT
         <p className="mt-3 text-[14px] leading-relaxed text-[var(--text-muted)] md:text-[15px]">
           {body}
         </p>
-        <Link href={href} className={cn(buttonVariants({ variant, size: "lg" }), "mt-7 gap-2")}>
+        <Link
+          href={href}
+          className={cn(buttonVariants({ variant, size: "lg" }), "mt-7 gap-2")}
+        >
           {button}
           <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
         </Link>
       </div>
     </article>
-  )
+  );
 }

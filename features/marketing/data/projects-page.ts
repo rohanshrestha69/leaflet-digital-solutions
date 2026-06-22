@@ -6,53 +6,53 @@ export type ProjectCategory =
   | "UX/UI"
   | "Motion Design"
   | "Mobile"
-  | "AI"
+  | "AI";
 
 export type ProjectMetric = {
-  value: string
-  label: string
-}
+  value: string;
+  label: string;
+};
 
 export type ProjectProcessStep = {
-  title: string
-  description: string
-}
+  title: string;
+  description: string;
+};
 
 export type Project = {
   /* Core (used everywhere) */
-  id: string
-  slug: string
-  title: string
-  year: string
-  tags: ProjectCategory[]
-  image: string
-  video?: string
-  tone?: string
-  href?: string
-  featured?: boolean
-  featuredOrder?: number
+  id: string;
+  slug: string;
+  title: string;
+  year: string;
+  tags: ProjectCategory[];
+  image: string;
+  video?: string;
+  tone?: string;
+  href?: string;
+  featured?: boolean;
+  featuredOrder?: number;
 
   /* Detail page fields */
-  client?: string
-  industry?: string
-  location?: string
-  duration?: string
-  services?: string[]
-  about?: string
-  challenge?: string
-  solution?: string
-  takeaways?: string
-  summary?: string
-  testimonial?: string
-  testimonialAuthor?: string
-  metrics?: ProjectMetric[]
-  gallery?: string[]
-  process?: ProjectProcessStep[]
-  liveUrl?: string
-}
+  client?: string;
+  industry?: string;
+  location?: string;
+  duration?: string;
+  services?: string[];
+  about?: string;
+  challenge?: string;
+  solution?: string;
+  takeaways?: string;
+  summary?: string;
+  testimonial?: string;
+  testimonialAuthor?: string;
+  metrics?: ProjectMetric[];
+  gallery?: string[];
+  process?: ProjectProcessStep[];
+  liveUrl?: string;
+};
 
 const VIDEO_BASE =
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample"
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample";
 
 export const projects: Project[] = [
   /* ---------------------------------------------------------------- */
@@ -447,8 +447,7 @@ export const projects: Project[] = [
       },
       {
         title: "Ship in six weeks",
-        description:
-          "Tight scope, weekly investor previews, no scope creep.",
+        description: "Tight scope, weekly investor previews, no scope creep.",
       },
     ],
   },
@@ -842,7 +841,7 @@ export const projects: Project[] = [
       },
     ],
   },
-]
+];
 
 export const projectFilters: ProjectCategory[] = [
   "Web Design",
@@ -851,7 +850,7 @@ export const projectFilters: ProjectCategory[] = [
   "Motion Design",
   "Mobile",
   "AI",
-]
+];
 
 /* ------------------------------------------------------------------ */
 /*  Selectors                                                           */
@@ -860,24 +859,22 @@ export const projectFilters: ProjectCategory[] = [
 export function getFeaturedProjects(limit = 4): Project[] {
   const featured = projects
     .filter((p) => p.featured)
-    .sort(
-      (a, b) => (a.featuredOrder ?? 999) - (b.featuredOrder ?? 999)
-    )
+    .sort((a, b) => (a.featuredOrder ?? 999) - (b.featuredOrder ?? 999));
 
-  if (featured.length === 0) return projects.slice(0, limit)
-  return featured.slice(0, limit)
+  if (featured.length === 0) return projects.slice(0, limit);
+  return featured.slice(0, limit);
 }
 
 export function getProjectBySlug(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug)
+  return projects.find((p) => p.slug === slug);
 }
 
 export function getNextProject(slug: string): Project {
-  const idx = projects.findIndex((p) => p.slug === slug)
-  return projects[(idx + 1) % projects.length]
+  const idx = projects.findIndex((p) => p.slug === slug);
+  return projects[(idx + 1) % projects.length];
 }
 
 export function getPrevProject(slug: string): Project {
-  const idx = projects.findIndex((p) => p.slug === slug)
-  return projects[(idx - 1 + projects.length) % projects.length]
+  const idx = projects.findIndex((p) => p.slug === slug);
+  return projects[(idx - 1 + projects.length) % projects.length];
 }

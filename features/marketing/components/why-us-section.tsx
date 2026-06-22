@@ -1,16 +1,17 @@
 // features/marketing/components/why-us-section.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowUpRight, Check, X } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import Link from "next/link";
+import { ArrowUpRight, Check, X } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { comparisonRows } from "@/features/marketing/data/comparison"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { comparisonRows } from "@/features/marketing/data/comparison";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { SectionLabel } from "@/components/shared/section-label";
 
 /* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
@@ -19,7 +20,7 @@ import { cn } from "@/lib/utils"
 const sectionV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
-}
+};
 
 const headerV: Variants = {
   hidden: { opacity: 0, y: 22, filter: "blur(3px)" },
@@ -29,7 +30,7 @@ const headerV: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.7, ease: ease.out },
   },
-}
+};
 
 const tableV: Variants = {
   hidden: { opacity: 0, y: 26, scale: 0.98 },
@@ -39,12 +40,12 @@ const tableV: Variants = {
     scale: 1,
     transition: { duration: 0.65, ease: ease.out, delay: 0.1 },
   },
-}
+};
 
 const rowsV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.04, delayChildren: 0.2 } },
-}
+};
 
 const rowV: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -53,12 +54,12 @@ const rowV: Variants = {
     y: 0,
     transition: { duration: 0.45, ease: ease.out },
   },
-}
+};
 
 const footerV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1, delayChildren: 0.25 } },
-}
+};
 
 const footerItemV: Variants = {
   hidden: { opacity: 0, y: 18 },
@@ -67,7 +68,7 @@ const footerItemV: Variants = {
     y: 0,
     transition: { duration: 0.6, ease: ease.out },
   },
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
@@ -80,6 +81,9 @@ export function WhyUsSection() {
       className="relative bg-[var(--background)] py-20 md:py-28"
     >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          Why Us?
+        </SectionLabel>
         <motion.div
           variants={sectionV}
           initial="hidden"
@@ -131,10 +135,12 @@ export function WhyUsSection() {
                     "grid grid-cols-4 items-center gap-4 px-8 py-6 text-[14px]",
                     "border-b border-[var(--border)] last:border-b-0",
                     "transition-[background-color] duration-300 ease-[var(--ease-premium)]",
-                    "hover:bg-[var(--card)]/30"
+                    "hover:bg-[var(--card)]/30",
                   )}
                 >
-                  <span className="font-medium text-[var(--text)]">{r.feature}</span>
+                  <span className="font-medium text-[var(--text)]">
+                    {r.feature}
+                  </span>
                   <Negative>{r.agency}</Negative>
                   <Negative>{r.freelancers}</Negative>
                   <Positive>{r.leaflet}</Positive>
@@ -151,15 +157,19 @@ export function WhyUsSection() {
                 variants={rowV}
                 className={cn(
                   "rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40 p-5",
-                  "transition-colors duration-300 hover:border-[var(--border-strong)]"
+                  "transition-colors duration-300 hover:border-[var(--border-strong)]",
                 )}
               >
                 <h3 className="font-heading text-[18px] font-semibold text-[var(--text)]">
                   {r.feature}
                 </h3>
                 <div className="mt-4 flex flex-col gap-3 text-[13px]">
-                  <ComparisonLine label="Agency" negative>{r.agency}</ComparisonLine>
-                  <ComparisonLine label="Freelancers" negative>{r.freelancers}</ComparisonLine>
+                  <ComparisonLine label="Agency" negative>
+                    {r.agency}
+                  </ComparisonLine>
+                  <ComparisonLine label="Freelancers" negative>
+                    {r.freelancers}
+                  </ComparisonLine>
                   <ComparisonLine label="Leaflet">{r.leaflet}</ComparisonLine>
                 </div>
               </motion.div>
@@ -178,7 +188,8 @@ export function WhyUsSection() {
               <p className="mt-6 max-w-[560px] text-[15px] leading-relaxed text-[var(--text-muted)] md:text-[16px]">
                 Without the physical constraints of an office, we access talent
                 traditional agencies can&apos;t reach. We work in your timezone,
-                follow your rhythm, and keep you in the loop with modern async tools.
+                follow your rhythm, and keep you in the loop with modern async
+                tools.
               </p>
             </motion.div>
 
@@ -186,18 +197,18 @@ export function WhyUsSection() {
               variants={footerItemV}
               className={cn(
                 "flex flex-col gap-8 rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40 p-8 md:p-10",
-                "transition-colors duration-300 hover:border-[var(--border-strong)]"
+                "transition-colors duration-300 hover:border-[var(--border-strong)]",
               )}
             >
               <blockquote className="font-heading text-[20px] font-medium leading-snug text-[var(--text)] md:text-[24px]">
-                &ldquo;Enterprise-grade results with the speed and cost-efficiency
-                of a lean, modern team.&rdquo;
+                &ldquo;Enterprise-grade results with the speed and
+                cost-efficiency of a lean, modern team.&rdquo;
               </blockquote>
               <Link
                 href="/about"
                 className={cn(
                   buttonVariants({ variant: "orange", size: "lg" }),
-                  "w-fit gap-2"
+                  "w-fit gap-2",
                 )}
               >
                 See how we work
@@ -208,7 +219,7 @@ export function WhyUsSection() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -223,7 +234,7 @@ function Negative({ children }: { children: React.ReactNode }) {
       </span>
       <span className="leading-snug">{children}</span>
     </span>
-  )
+  );
 }
 
 function Positive({ children }: { children: React.ReactNode }) {
@@ -234,7 +245,7 @@ function Positive({ children }: { children: React.ReactNode }) {
       </span>
       <span className="leading-snug">{children}</span>
     </span>
-  )
+  );
 }
 
 function ComparisonLine({
@@ -242,9 +253,9 @@ function ComparisonLine({
   children,
   negative = false,
 }: {
-  label: string
-  children: React.ReactNode
-  negative?: boolean
+  label: string;
+  children: React.ReactNode;
+  negative?: boolean;
 }) {
   return (
     <div className="flex items-start gap-3">
@@ -253,7 +264,7 @@ function ComparisonLine({
           "inline-flex size-5 shrink-0 items-center justify-center rounded-full",
           negative
             ? "border border-white/[0.06] bg-white/[0.02]"
-            : "border border-[var(--brand-border)] bg-[var(--brand)]/10"
+            : "border border-[var(--brand-border)] bg-[var(--brand)]/10",
         )}
       >
         {negative ? (
@@ -266,10 +277,15 @@ function ComparisonLine({
         <span className="font-medium text-[9px] uppercase tracking-[0.2em] text-[var(--text-subtle)]">
           {label}
         </span>
-        <span className={cn("leading-snug", negative ? "text-[var(--text-muted)]" : "text-[var(--text)]")}>
+        <span
+          className={cn(
+            "leading-snug",
+            negative ? "text-[var(--text-muted)]" : "text-[var(--text)]",
+          )}
+        >
           {children}
         </span>
       </div>
     </div>
-  )
+  );
 }

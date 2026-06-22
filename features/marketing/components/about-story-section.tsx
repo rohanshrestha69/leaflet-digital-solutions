@@ -1,49 +1,61 @@
 // features/marketing/components/about-story-section.tsx
-"use client"
+"use client";
 
-import { Beaker, Rocket, Zap, type LucideIcon } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import { Beaker, Rocket, Zap, type LucideIcon } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { storyCards } from "@/features/marketing/data/story"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { storyCards } from "@/features/marketing/data/story";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { SectionLabel } from "@/components/shared/section-label";
 
 const icons: Record<string, LucideIcon> = {
-  spark:      Zap,
+  spark: Zap,
   experiment: Beaker,
-  evolution:  Rocket,
-}
+  evolution: Rocket,
+};
 
 /* ── Variants ─────────────────────────────────────────────────────── */
 
 const sectionV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+};
 
 const headerV: Variants = {
   hidden: { opacity: 0, y: 22 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
+};
 
 const cardsV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.09, delayChildren: 0.2 } },
-}
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.2 } },
+};
 
 const cardV: Variants = {
   hidden: { opacity: 0, y: 28, scale: 0.97 },
-  show:   { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: ease.out } },
-}
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: ease.out },
+  },
+};
 
 /* ── Component ────────────────────────────────────────────────────── */
 
 export function AboutStorySection() {
   return (
-    <section id="about" className="relative bg-[var(--background)] py-20 md:py-28">
+    <section
+      id="about"
+      className="relative bg-[var(--background)] py-20 md:py-28"
+    >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          Our Story
+        </SectionLabel>
         <motion.div
           variants={sectionV}
           initial="hidden"
@@ -61,8 +73,8 @@ export function AboutStorySection() {
               Built for growth.
             </SectionHeading>
             <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-muted)] md:text-right">
-              A modern studio model — engineered for clarity, speed, and the kind
-              of work that compounds long after launch.
+              A modern studio model — engineered for clarity, speed, and the
+              kind of work that compounds long after launch.
             </p>
           </motion.div>
 
@@ -72,8 +84,8 @@ export function AboutStorySection() {
             className="mt-14 grid gap-5 md:mt-20 md:grid-cols-3 md:gap-6"
           >
             {storyCards.map((card, i) => {
-              const Icon   = icons[card.icon]!
-              const number = String(i + 1).padStart(2, "0")
+              const Icon = icons[card.icon]!;
+              const number = String(i + 1).padStart(2, "0");
 
               return (
                 <motion.article
@@ -123,11 +135,11 @@ export function AboutStorySection() {
                     className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(248,130,33,0.09),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   />
                 </motion.article>
-              )
+              );
             })}
           </motion.div>
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

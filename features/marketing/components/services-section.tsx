@@ -1,45 +1,52 @@
 // features/marketing/components/services-section.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { serviceOfferings } from "@/features/marketing/data/services-page"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { serviceOfferings } from "@/features/marketing/data/services-page";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { SectionLabel } from "@/components/shared/section-label";
 
 /* ── Variants ─────────────────────────────────────────────────────── */
 
 const sectionV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+};
 
 const headerV: Variants = {
   hidden: { opacity: 0, y: 22 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: ease.out } },
+};
 
 const listV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
-}
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+};
 
 const rowV: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } },
+};
 
 /* ── Component ────────────────────────────────────────────────────── */
 
 export function ServicesSection() {
   return (
-    <section id="services" className="relative bg-[var(--background)] py-20 md:py-28">
+    <section
+      id="services"
+      className="relative bg-[var(--background)] py-20 md:py-28"
+    >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          Our Services
+        </SectionLabel>
         <motion.div
           variants={sectionV}
           initial="hidden"
@@ -56,8 +63,8 @@ export function ServicesSection() {
               services for you
             </SectionHeading>
             <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-muted)] md:text-right">
-              A complete toolkit for modern digital growth — from interface design
-              to launch.
+              A complete toolkit for modern digital growth — from interface
+              design to launch.
             </p>
           </motion.div>
 
@@ -81,7 +88,10 @@ export function ServicesSection() {
           >
             <Link
               href="/services"
-              className={cn(buttonVariants({ variant: "outlineDark", size: "lg" }), "gap-2")}
+              className={cn(
+                buttonVariants({ variant: "outlineDark", size: "lg" }),
+                "gap-2",
+              )}
             >
               All services
               <ArrowUpRight className="size-4" />
@@ -90,7 +100,7 @@ export function ServicesSection() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }
 
 /* ── Service row ──────────────────────────────────────────────────── */
@@ -100,9 +110,9 @@ function ServiceRow({
   title,
   href,
 }: {
-  number: string
-  title:  string
-  href:   string
+  number: string;
+  title: string;
+  href: string;
 }) {
   return (
     <motion.li variants={rowV}>
@@ -127,12 +137,14 @@ function ServiceRow({
           {number}
         </span>
 
-        <h3 className={cn(
-          "absolute left-1/2 -translate-x-1/2 text-center",
-          "font-heading font-semibold tracking-tight text-[var(--text)]",
-          "text-[22px] md:text-[34px] lg:text-[40px]",
-          "transition-colors duration-300 group-hover:text-[var(--brand)]",
-        )}>
+        <h3
+          className={cn(
+            "absolute left-1/2 -translate-x-1/2 text-center",
+            "font-heading font-semibold tracking-tight text-[var(--text)]",
+            "text-[22px] md:text-[34px] lg:text-[40px]",
+            "transition-colors duration-300 group-hover:text-[var(--brand)]",
+          )}
+        >
           {title}
         </h3>
 
@@ -147,5 +159,5 @@ function ServiceRow({
         </motion.span>
       </Link>
     </motion.li>
-  )
+  );
 }

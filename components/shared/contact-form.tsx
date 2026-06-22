@@ -1,15 +1,15 @@
 // components/shared/contact-form.tsx
-"use client"
+"use client";
 
-import { useCallback, useId, useState, type FormEvent } from "react"
-import { ArrowUpRight, Check } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import { useCallback, useId, useState, type FormEvent } from "react";
+import { ArrowUpRight, Check } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -23,35 +23,35 @@ export type ContactFormService =
   | "Landing Page"
   | "Content Creation"
   | "Web Development"
-  | "SEO"
+  | "SEO";
 
 export type ContactFormBudget =
   | "< $10k"
   | "$10k – $30k"
   | "$30k – $80k"
-  | "$80k+"
+  | "$80k+";
 
 export type ContactFormData = {
-  name: string
-  company: string
-  email: string
-  phone: string
-  services: ContactFormService[]
-  budget: ContactFormBudget | null
-  message: string
-}
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  services: ContactFormService[];
+  budget: ContactFormBudget | null;
+  message: string;
+};
 
 type ContactFormProps = {
-  eyebrow?: string
-  heading?: React.ReactNode
-  description?: string
-  onSubmit?: (data: ContactFormData) => void | Promise<void>
-  services?: ContactFormService[]
-  budgets?: ContactFormBudget[]
-  id?: string
-  noBorder?: boolean
-  className?: string
-}
+  eyebrow?: string;
+  heading?: React.ReactNode;
+  description?: string;
+  onSubmit?: (data: ContactFormData) => void | Promise<void>;
+  services?: ContactFormService[];
+  budgets?: ContactFormBudget[];
+  id?: string;
+  noBorder?: boolean;
+  className?: string;
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Defaults                                  */
@@ -66,14 +66,14 @@ const DEFAULT_SERVICES: ContactFormService[] = [
   "Content Creation",
   "Web Development",
   "SEO",
-]
+];
 
 const DEFAULT_BUDGETS: ContactFormBudget[] = [
   "< $10k",
   "$10k – $30k",
   "$30k – $80k",
   "$80k+",
-]
+];
 
 /* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
@@ -82,7 +82,7 @@ const DEFAULT_BUDGETS: ContactFormBudget[] = [
 const sectionV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
+};
 
 const itemV: Variants = {
   hidden: { opacity: 0, y: 22 },
@@ -91,7 +91,7 @@ const itemV: Variants = {
     y: 0,
     transition: { duration: 0.65, ease: ease.out },
   },
-}
+};
 
 const fieldV: Variants = {
   hidden: { opacity: 0, y: 14 },
@@ -100,7 +100,7 @@ const fieldV: Variants = {
     y: 0,
     transition: { duration: 0.5, ease: ease.out },
   },
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
@@ -123,26 +123,28 @@ export function ContactForm({
   noBorder = false,
   className,
 }: ContactFormProps) {
-  const formId = useId()
+  const formId = useId();
 
-  const [name, setName] = useState("")
-  const [company, setCompany] = useState("")
-  const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
-  const [selectedServices, setSelectedServices] = useState<ContactFormService[]>([])
-  const [budget, setBudget] = useState<ContactFormBudget | null>(null)
-  const [message, setMessage] = useState("")
-  const [submitted, setSubmitted] = useState(false)
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [selectedServices, setSelectedServices] = useState<
+    ContactFormService[]
+  >([]);
+  const [budget, setBudget] = useState<ContactFormBudget | null>(null);
+  const [message, setMessage] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const toggleService = useCallback((s: ContactFormService) => {
     setSelectedServices((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
-    )
-  }, [])
+      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
+    );
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
-      e.preventDefault()
+      e.preventDefault();
       await onSubmit?.({
         name,
         company,
@@ -151,13 +153,13 @@ export function ContactForm({
         services: selectedServices,
         budget,
         message,
-      })
-      setSubmitted(true)
+      });
+      setSubmitted(true);
     },
-    [name, company, email, phone, selectedServices, budget, message, onSubmit]
-  )
+    [name, company, email, phone, selectedServices, budget, message, onSubmit],
+  );
 
-  if (submitted) return <ContactFormSuccess id={id} noBorder={noBorder} />
+  if (submitted) return <ContactFormSuccess id={id} noBorder={noBorder} />;
 
   return (
     <section
@@ -165,7 +167,7 @@ export function ContactForm({
       className={cn(
         "relative py-20 md:py-28",
         !noBorder && "border-b border-[var(--border)]",
-        className
+        className,
       )}
     >
       <Container wide>
@@ -200,7 +202,7 @@ export function ContactForm({
               "flex flex-col gap-10 rounded-[var(--radius-xl)]",
               "border border-[var(--border)] bg-[var(--card)]/40 p-7 md:p-10",
               "transition-[border-color] duration-300 ease-[var(--ease-premium)]",
-              "hover:border-[var(--border-strong)]"
+              "hover:border-[var(--border-strong)]",
             )}
           >
             {/* Contact fields */}
@@ -245,7 +247,11 @@ export function ContactForm({
             {/* Services */}
             <motion.div variants={fieldV} className="flex flex-col gap-5">
               <FieldLabel>I&apos;m interested in…</FieldLabel>
-              <div className="flex flex-wrap gap-2" role="group" aria-label="Services">
+              <div
+                className="flex flex-wrap gap-2"
+                role="group"
+                aria-label="Services"
+              >
                 {services.map((s) => (
                   <Chip
                     key={s}
@@ -261,7 +267,11 @@ export function ContactForm({
             {/* Budget */}
             <motion.div variants={fieldV} className="flex flex-col gap-5">
               <FieldLabel>Project budget (USD)</FieldLabel>
-              <div className="flex flex-wrap gap-2" role="group" aria-label="Budget">
+              <div
+                className="flex flex-wrap gap-2"
+                role="group"
+                aria-label="Budget"
+              >
                 {budgets.map((b) => (
                   <Chip
                     key={b}
@@ -295,7 +305,7 @@ export function ContactForm({
                   "px-3 py-3 text-[14px] text-[var(--text)] placeholder:text-[var(--text-subtle)]",
                   "outline-none transition-[border-color,box-shadow] duration-200",
                   "hover:border-[var(--border-strong)]",
-                  "focus:border-[var(--brand-border)] focus:ring-2 focus:ring-[var(--brand)]/15"
+                  "focus:border-[var(--brand-border)] focus:ring-2 focus:ring-[var(--brand)]/15",
                 )}
               />
               <p className="font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
@@ -309,7 +319,7 @@ export function ContactForm({
                 type="submit"
                 className={cn(
                   buttonVariants({ variant: "orange", size: "lg" }),
-                  "w-full gap-2 sm:w-auto"
+                  "w-full gap-2 sm:w-auto",
                 )}
               >
                 Send message
@@ -320,7 +330,7 @@ export function ContactForm({
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -331,15 +341,15 @@ function ContactFormSuccess({
   id,
   noBorder,
 }: {
-  id?: string
-  noBorder?: boolean
+  id?: string;
+  noBorder?: boolean;
 }) {
   return (
     <section
       id={id}
       className={cn(
         "relative py-20 md:py-28",
-        !noBorder && "border-b border-[var(--border)]"
+        !noBorder && "border-b border-[var(--border)]",
       )}
     >
       <Container wide>
@@ -350,7 +360,7 @@ function ContactFormSuccess({
           className={cn(
             "mx-auto flex max-w-2xl flex-col items-center justify-center text-center",
             "rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)]/40",
-            "p-10 md:p-16"
+            "p-10 md:p-16",
           )}
         >
           <motion.div
@@ -372,7 +382,7 @@ function ContactFormSuccess({
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -382,7 +392,7 @@ function ContactFormSuccess({
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="text-[13px] font-medium text-[var(--text)]">{children}</p>
-  )
+  );
 }
 
 function UnderlinedField({
@@ -395,16 +405,16 @@ function UnderlinedField({
   maxLength,
   required = false,
 }: {
-  id: string
-  label: string
-  value: string
-  onChange: (v: string) => void
-  placeholder?: string
-  type?: string
-  maxLength?: number
-  required?: boolean
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  maxLength?: number;
+  required?: boolean;
 }) {
-  const [focused, setFocused] = useState(false)
+  const [focused, setFocused] = useState(false);
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -412,7 +422,7 @@ function UnderlinedField({
         htmlFor={id}
         className={cn(
           "text-[13px] font-medium transition-colors duration-200",
-          focused ? "text-[var(--brand)]" : "text-[var(--text)]"
+          focused ? "text-[var(--brand)]" : "text-[var(--text)]",
         )}
       >
         {label}
@@ -431,7 +441,7 @@ function UnderlinedField({
           "w-full border-b border-[var(--border)] bg-transparent pb-2",
           "text-[15px] text-[var(--text)] placeholder:text-[var(--text-subtle)]",
           "outline-none transition-[border-color] duration-200",
-          "hover:border-[var(--border-strong)] focus:border-[var(--brand)]"
+          "hover:border-[var(--border-strong)] focus:border-[var(--brand)]",
         )}
       />
 
@@ -444,7 +454,7 @@ function UnderlinedField({
         style={{ originX: 0, transformOrigin: "left" }}
       />
     </div>
-  )
+  );
 }
 
 function Chip({
@@ -452,9 +462,9 @@ function Chip({
   onClick,
   children,
 }: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <motion.button
@@ -468,10 +478,10 @@ function Chip({
         "transition-[background-color,border-color,color] duration-250 ease-[var(--ease-premium)]",
         active
           ? "border-[var(--brand-border)] bg-[var(--brand)]/10 text-[var(--brand)]"
-          : "border-[var(--border)] bg-[var(--background)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+          : "border-[var(--border)] bg-[var(--background)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]",
       )}
     >
       {children}
     </motion.button>
-  )
+  );
 }

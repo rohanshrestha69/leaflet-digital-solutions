@@ -1,28 +1,22 @@
 // features/about/components/about-team.tsx
-"use client"
+"use client";
 
-import Image from "next/image"
-import { ArrowUpRight, Globe } from "lucide-react"
-import { motion } from "motion/react"
+import Image from "next/image";
+import { ArrowUpRight, Globe } from "lucide-react";
+import { motion } from "motion/react";
 
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { MagneticButton } from "@/components/animations/magnetic-button"
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { MagneticButton } from "@/components/animations/magnetic-button";
 import {
   directors,
   leadership,
   type TeamMember,
-} from "@/features/marketing/data/about-data"
-import { viewport, ease } from "@/lib/motion"
-import { cn } from "@/lib/utils"
-import {
-  sectionV,
-  itemBlurV,
-  gridV,
-  tileV,
-  popV,
-} from "./about-variants"
-import { LiaLinkedin } from "react-icons/lia"
+} from "@/features/marketing/data/about-data";
+import { viewport, ease } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { sectionV, itemBlurV, gridV, tileV, popV } from "./about-variants";
+import { LiaLinkedin } from "react-icons/lia";
 
 export function AboutTeam() {
   return (
@@ -92,7 +86,6 @@ export function AboutTeam() {
                 className="absolute bottom-4 left-4 right-4"
               >
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-[var(--background)]/70 px-2.5 py-1 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-muted)] backdrop-blur-md">
-                  <span className="size-1.5 rounded-full bg-[var(--brand)]" />
                   14 countries
                 </span>
               </motion.div>
@@ -104,7 +97,7 @@ export function AboutTeam() {
                 "group relative flex flex-col overflow-hidden rounded-[var(--radius-xl)]",
                 "border border-[var(--brand-border)] bg-[var(--brand)]/[0.04]",
                 "p-6 md:col-span-2 md:min-h-[320px] md:p-8",
-                "transition-colors duration-300"
+                "transition-colors duration-300",
               )}
             >
               <div className="flex items-center justify-between">
@@ -156,7 +149,7 @@ export function AboutTeam() {
                     "border border-[var(--brand-border)] bg-[var(--brand)]/10 px-3.5 py-1.5",
                     "text-[12px] font-medium text-[var(--brand)]",
                     "transition-[background-color] duration-300 ease-[var(--ease-premium)]",
-                    "hover:bg-[var(--brand)]/20"
+                    "hover:bg-[var(--brand)]/20",
                   )}
                 >
                   View on LinkedIn
@@ -173,7 +166,7 @@ export function AboutTeam() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }
 
 function TeamCard({ member }: { member: TeamMember }) {
@@ -186,7 +179,7 @@ function TeamCard({ member }: { member: TeamMember }) {
         "group flex flex-col gap-6 rounded-[var(--radius-xl)]",
         "border border-[var(--border)] bg-[var(--card)]/40 p-6 md:p-7",
         "transition-[border-color] duration-300 ease-[var(--ease-premium)]",
-        "hover:border-[var(--border-strong)]"
+        "hover:border-[var(--border-strong)]",
       )}
     >
       <div className="relative size-20 overflow-hidden rounded-full border border-[var(--border)]">
@@ -222,14 +215,14 @@ function TeamCard({ member }: { member: TeamMember }) {
             "mt-auto inline-flex size-9 items-center justify-center rounded-full",
             "border border-[var(--border)] text-[var(--text-muted)]",
             "transition-[border-color,background-color,color] duration-300 ease-[var(--ease-premium)]",
-            "hover:border-[var(--brand-border)] hover:bg-[var(--brand)]/10 hover:text-[var(--brand)]"
+            "hover:border-[var(--brand-border)] hover:bg-[var(--brand)]/10 hover:text-[var(--brand)]",
           )}
         >
           <LiaLinkedin className="size-3.5" />
         </a>
       )}
     </motion.article>
-  )
+  );
 }
 
 function MiniStat({ value, label }: { value: string; label: string }) {
@@ -242,5 +235,5 @@ function MiniStat({ value, label }: { value: string; label: string }) {
         {label}
       </span>
     </div>
-  )
+  );
 }

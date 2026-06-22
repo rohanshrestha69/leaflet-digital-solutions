@@ -83,7 +83,7 @@ export function MobileNav() {
         <SheetHeader className="flex flex-row items-center justify-between p-0">
           <SheetTitle>
             <Link
-              href="/#home"
+              href="/"
               onClick={() => setOpen(false)}
               aria-label="Leaflet — Home"
               className="inline-flex items-center gap-2 font-heading font-bold tracking-wide text-white"

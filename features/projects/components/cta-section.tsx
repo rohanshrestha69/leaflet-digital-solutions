@@ -1,43 +1,43 @@
 // features/projects/components/cta-section.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { InteractiveDots } from "@/components/ui/interactive-dots"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { InteractiveDots } from "@/components/ui/interactive-dots";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 /* ── Types ─────────────────────────────────────────────────────── */
 
 type CTAAction = {
-  label:    string
-  href:     string
-  variant?: "orange" | "outlineDark"
-  external?: boolean
-}
+  label: string;
+  href: string;
+  variant?: "orange" | "outlineDark";
+  external?: boolean;
+};
 
 type CTASectionProps = {
-  eyebrow?:    string
-  title:       React.ReactNode
-  description?: string
-  actions?:    CTAAction[]
-  withDots?:   boolean
-  align?:      "center" | "left"
-  id?:         string
-  size?:       "default" | "compact"
-  className?:  string
-}
+  eyebrow?: string;
+  title: React.ReactNode;
+  description?: string;
+  actions?: CTAAction[];
+  withDots?: boolean;
+  align?: "center" | "left";
+  id?: string;
+  size?: "default" | "compact";
+  className?: string;
+};
 
 /* ── Variants ──────────────────────────────────────────────────── */
 
 const orchestratorV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
 
 const eyebrowV: Variants = {
   hidden: { opacity: 0, y: 10, filter: "blur(4px)" },
@@ -47,7 +47,7 @@ const eyebrowV: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.5, ease: ease.out },
   },
-}
+};
 
 const titleV: Variants = {
   hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
@@ -57,7 +57,7 @@ const titleV: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.75, ease: ease.out },
   },
-}
+};
 
 const descV: Variants = {
   hidden: { opacity: 0, y: 14 },
@@ -66,12 +66,12 @@ const descV: Variants = {
     y: 0,
     transition: { duration: 0.55, ease: ease.out },
   },
-}
+};
 
 const buttonsV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-}
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
 
 const buttonV: Variants = {
   hidden: { opacity: 0, y: 12, scale: 0.96 },
@@ -81,7 +81,7 @@ const buttonV: Variants = {
     scale: 1,
     transition: { duration: 0.5, ease: ease.spring },
   },
-}
+};
 
 /* ── Component ─────────────────────────────────────────────────── */
 
@@ -91,12 +91,12 @@ export function CTASection({
   description,
   actions = [],
   withDots = true,
-  align    = "center",
+  align = "center",
   id,
-  size     = "default",
+  size = "default",
   className,
 }: CTASectionProps) {
-  const padding = size === "compact" ? "py-16 md:py-24" : "py-24 md:py-36"
+  const padding = size === "compact" ? "py-16 md:py-24" : "py-24 md:py-36";
 
   return (
     <section
@@ -104,7 +104,7 @@ export function CTASection({
       className={cn(
         "relative overflow-hidden border-t border-white/[0.06] bg-[var(--background-deep)]",
         padding,
-        className
+        className,
       )}
     >
       {/* Background dots */}
@@ -137,7 +137,7 @@ export function CTASection({
         wide
         className={cn(
           "relative z-[2]",
-          align === "center" ? "text-center" : "text-left"
+          align === "center" ? "text-center" : "text-left",
         )}
       >
         <motion.div
@@ -147,7 +147,7 @@ export function CTASection({
           viewport={viewport.section}
           className={cn(
             "flex flex-col gap-6",
-            align === "center" ? "items-center" : "items-start"
+            align === "center" ? "items-center" : "items-start",
           )}
         >
           {eyebrow && (
@@ -156,7 +156,7 @@ export function CTASection({
               className={cn(
                 "inline-flex items-center gap-2 rounded-full",
                 "border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm",
-                "px-3.5 py-1.5 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-muted)]"
+                "px-3.5 py-1.5 font-medium text-[12px] uppercase tracking-[0.22em] text-[var(--text-muted)]",
               )}
             >
               <span className="size-1.5 rounded-full bg-[var(--brand)]" />
@@ -169,7 +169,7 @@ export function CTASection({
             className={cn(
               "max-w-4xl font-heading font-extrabold leading-[1.08] tracking-tight text-white",
               "text-[30px] sm:text-[44px] lg:text-[60px]",
-              align === "center" && "mx-auto"
+              align === "center" && "mx-auto",
             )}
           >
             {title}
@@ -180,7 +180,7 @@ export function CTASection({
               variants={descV}
               className={cn(
                 "max-w-xl text-[14px] leading-relaxed text-[var(--text-muted)] sm:text-[15px] md:text-[16px] md:leading-7",
-                align === "center" && "mx-auto"
+                align === "center" && "mx-auto",
               )}
             >
               {description}
@@ -192,7 +192,7 @@ export function CTASection({
               variants={buttonsV}
               className={cn(
                 "mt-2 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center",
-                align === "center" && "sm:justify-center"
+                align === "center" && "sm:justify-center",
               )}
             >
               {actions.map((action) => (
@@ -204,9 +204,9 @@ export function CTASection({
                     className={cn(
                       buttonVariants({
                         variant: action.variant ?? "orange",
-                        size:    "lg",
+                        size: "lg",
                       }),
-                      "group w-full gap-2 sm:w-auto"
+                      "group w-full gap-2 sm:w-auto",
                     )}
                   >
                     {action.label}
@@ -219,5 +219,5 @@ export function CTASection({
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

@@ -1,20 +1,15 @@
-import {
-  type LucideIcon,
-  FlaskConical,
-  Rocket,
-  Sparkles,
-} from "lucide-react"
+import { type LucideIcon, FlaskConical, Rocket, Sparkles } from "lucide-react";
 
 /* -------------------------------------------------------------------------- */
 /*                                Story cards                                 */
 /* -------------------------------------------------------------------------- */
 
 export type StoryCard = {
-  number: string
-  title: string
-  description: string
-  icon: LucideIcon
-}
+  number: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+};
 
 export const storyCards: StoryCard[] = [
   {
@@ -38,17 +33,17 @@ export const storyCards: StoryCard[] = [
       "Today we're a global network of elite remote talent, delivering enterprise-grade solutions with startup agility.",
     icon: Rocket,
   },
-]
+];
 
 /* -------------------------------------------------------------------------- */
 /*                                   Stats                                    */
 /* -------------------------------------------------------------------------- */
 
 export type AboutStat = {
-  value: string
-  label: string
-  description: string
-}
+  value: string;
+  label: string;
+  description: string;
+};
 
 export const aboutStats: AboutStat[] = [
   {
@@ -71,19 +66,19 @@ export const aboutStats: AboutStat[] = [
     label: "Shipped projects",
     description: "From brand systems to production-grade platforms.",
   },
-]
+];
 
 /* -------------------------------------------------------------------------- */
 /*                                    Team                                    */
 /* -------------------------------------------------------------------------- */
 
 export type TeamMember = {
-  name: string
-  role: string
-  bio: string
-  image: string
-  linkedin?: string
-}
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+  linkedin?: string;
+};
 
 export const leadership: TeamMember[] = [
   {
@@ -110,7 +105,7 @@ export const leadership: TeamMember[] = [
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=800&fit=crop",
     linkedin: "#",
   },
-]
+];
 
 export const directors: TeamMember[] = [
   {
@@ -137,4 +132,4 @@ export const directors: TeamMember[] = [
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=800&fit=crop",
     linkedin: "#",
   },
-]
+];

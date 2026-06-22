@@ -1,17 +1,18 @@
 // features/marketing/components/projects-section.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { ProjectCard } from "@/features/projects/components/project-card"
-import { getFeaturedProjects } from "@/features/marketing/data/projects-page"
-import { premiumEase, softEase, sectionViewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { ProjectCard } from "@/features/projects/components/project-card";
+import { getFeaturedProjects } from "@/features/marketing/data/projects-page";
+import { premiumEase, softEase, sectionViewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { SectionLabel } from "@/components/shared/section-label";
 
 /* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
@@ -22,7 +23,7 @@ const sectionContainer: Variants = {
   visible: {
     transition: { staggerChildren: 0.1, delayChildren: 0.04 },
   },
-}
+};
 
 const header: Variants = {
   hidden: { opacity: 0, y: 22, filter: "blur(3px)" },
@@ -32,14 +33,14 @@ const header: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.7, ease: premiumEase },
   },
-}
+};
 
 const grid: Variants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.12, delayChildren: 0.1 },
   },
-}
+};
 
 const card: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.97 },
@@ -49,14 +50,14 @@ const card: Variants = {
     scale: 1,
     transition: { duration: 0.65, ease: premiumEase },
   },
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Section                                   */
 /* -------------------------------------------------------------------------- */
 
 export function ProjectsSection() {
-  const featured = getFeaturedProjects(4)
+  const featured = getFeaturedProjects(4);
 
   return (
     <section
@@ -64,6 +65,9 @@ export function ProjectsSection() {
       className="relative bg-[var(--background)] py-16 md:py-28"
     >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          Our Projects
+        </SectionLabel>
         <motion.div
           variants={sectionContainer}
           initial="hidden"
@@ -85,7 +89,7 @@ export function ProjectsSection() {
               href="/work"
               className={cn(
                 buttonVariants({ variant: "outlineDark" }),
-                "self-start md:self-auto"
+                "self-start md:self-auto",
               )}
             >
               View all projects
@@ -127,5 +131,5 @@ export function ProjectsSection() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

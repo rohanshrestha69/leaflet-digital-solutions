@@ -1,256 +1,549 @@
 // features/marketing/components/hero-section.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowUpRight, Eye, Leaf, Snowflake } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
+import Link from "next/link";
+import { motion, type Variants } from "motion/react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import dynamic from "next/dynamic";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { InfiniteLogoStrip } from "@/components/animations/infinite-logo-strip"
-import { AnimatedCounter } from "@/components/animations/animated-counter"
-import { SplitWords } from "@/components/animations/text-reveal"
-import { LineSweepReveal } from "@/components/animations/line-sweep-reveal"
-import { InteractiveDots } from "@/components/ui/interactive-dots"
-import { clientLogos, stats } from "@/features/marketing/data/stats"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { Container } from "@/components/shared/container";
+import { SplitWords } from "@/components/animations/text-reveal";
+import { LineSweepReveal } from "@/components/animations/line-sweep-reveal";
+import { AnimatedCounter } from "@/components/animations/animated-counter";
+import { stats } from "../data/stats";
+import { viewport } from "@/lib/motion";
 
-/* ── Logo data ────────────────────────────────────────────────────── */
+import type {
+  EarthArc,
+  EarthConfig,
+  EarthRing,
+  EarthHexPolygon,
+} from "@/components/ui/earth";
+import countriesData from "@/features/marketing/data/globe.json";
+import { EARTH_PRESETS } from "../data/earth-presets";
 
-const logoIcons = [Eye, Snowflake, Eye, undefined, Leaf, undefined] as const
-const logos = clientLogos.map((label, i) => ({
-  label,
-  Icon: logoIcons[i],
-}))
+// ─────────────────────────────────────────────────────────────────────────────
+// LAZY GLOBE
+// ─────────────────────────────────────────────────────────────────────────────
 
-/* ── Variants ─────────────────────────────────────────────────────── */
+const Earth = dynamic(
+  () => import("@/components/ui/earth").then((m) => m.Earth),
+  { ssr: false, loading: () => null },
+);
 
-const container: Variants = {
-  hidden: {},
-  show:   { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// GLOBE DATA
+// ─────────────────────────────────────────────────────────────────────────────
 
-const item: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.7, ease: ease.out } },
-}
+const PAL = {
+  blue: "#4da8da",
+  indigo: "#818cf8",
+  cyan: "#67e8f9",
+  violet: "#a78bfa",
+  teal: "#5eead4",
+} as const;
 
-const eyebrowV: Variants = {
-  hidden: { opacity: 0, y: 12, filter: "blur(4px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.55, ease: ease.out },
+const ARC_DATA: EarthArc[] = [
+  {
+    order: 1,
+    startLat: 40.71,
+    startLng: -74.01,
+    endLat: 51.51,
+    endLng: -0.13,
+    arcAlt: 0.28,
+    color: [PAL.blue, PAL.indigo],
   },
-}
-
-const buttonRow: Variants = {
-  hidden: {},
-  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
-}
-
-const buttonItem: Variants = {
-  hidden: { opacity: 0, y: 12, scale: 0.97 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: ease.spring },
+  {
+    order: 2,
+    startLat: 37.77,
+    startLng: -122.4,
+    endLat: 35.68,
+    endLng: 139.69,
+    arcAlt: 0.4,
+    color: [PAL.indigo, PAL.cyan],
   },
-}
+  {
+    order: 3,
+    startLat: 48.85,
+    startLng: 2.35,
+    endLat: 55.76,
+    endLng: 37.62,
+    arcAlt: 0.16,
+    color: [PAL.cyan, PAL.blue],
+  },
+  {
+    order: 4,
+    startLat: 51.51,
+    startLng: -0.13,
+    endLat: -23.55,
+    endLng: -46.63,
+    arcAlt: 0.42,
+    color: [PAL.violet, PAL.blue],
+  },
+  {
+    order: 5,
+    startLat: 35.68,
+    startLng: 139.69,
+    endLat: -33.87,
+    endLng: 151.21,
+    arcAlt: 0.3,
+    color: [PAL.blue, PAL.teal],
+  },
+  {
+    order: 6,
+    startLat: 40.71,
+    startLng: -74.01,
+    endLat: 6.52,
+    endLng: 3.38,
+    arcAlt: 0.48,
+    color: [PAL.indigo, PAL.violet],
+  },
+  {
+    order: 7,
+    startLat: 28.61,
+    startLng: 77.23,
+    endLat: 48.85,
+    endLng: 2.35,
+    arcAlt: 0.26,
+    color: [PAL.teal, PAL.violet],
+  },
+  {
+    order: 8,
+    startLat: -33.87,
+    startLng: 151.21,
+    endLat: 34.05,
+    endLng: -118.24,
+    arcAlt: 0.44,
+    color: [PAL.violet, PAL.cyan],
+  },
+  {
+    order: 9,
+    startLat: 1.35,
+    startLng: 103.82,
+    endLat: 51.51,
+    endLng: -0.13,
+    arcAlt: 0.34,
+    color: [PAL.cyan, PAL.blue],
+  },
+  {
+    order: 10,
+    startLat: 25.2,
+    startLng: 55.27,
+    endLat: 19.08,
+    endLng: 72.88,
+    arcAlt: 0.14,
+    color: [PAL.indigo, PAL.teal],
+  },
+];
 
-const logoStrip: Variants = {
+const RING_DATA: EarthRing[] = [
+  {
+    lat: 40.71,
+    lng: -74.01,
+    color: PAL.blue,
+    maxR: 3,
+    propagationSpeed: 2.5,
+    repeatPeriod: 1000,
+  },
+  {
+    lat: 51.51,
+    lng: -0.13,
+    color: PAL.indigo,
+    maxR: 3,
+    propagationSpeed: 2.5,
+    repeatPeriod: 1200,
+  },
+  {
+    lat: 35.68,
+    lng: 139.69,
+    color: PAL.cyan,
+    maxR: 3,
+    propagationSpeed: 2.5,
+    repeatPeriod: 900,
+  },
+  {
+    lat: -33.87,
+    lng: 151.21,
+    color: PAL.teal,
+    maxR: 3,
+    propagationSpeed: 2.5,
+    repeatPeriod: 1100,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANIMATION VARIANTS
+//
+// Timeline (from content mount):
+//   0.00s  Content container mounts
+//   0.05s  Headline words split in
+//   0.50s  Subtitle sweep
+//   0.85s  CTA buttons fade up
+//   1.20s  Stats counter cascade
+// ─────────────────────────────────────────────────────────────────────────────
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 16 },
-  show: {
+  show: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: ease.out, delay: 0.55 },
-  },
-}
+    transition: { duration: 0.6, ease: EASE, delay },
+  }),
+};
 
-const statsGrid: Variants = {
+const statContainer: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
-}
+  show: {
+    transition: { staggerChildren: 0.09, delayChildren: 1.2 },
+  },
+};
 
 const statItem: Variants = {
   hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: ease.out },
+    transition: { duration: 0.55, ease: EASE },
   },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GLOBE STAGE
+// ─────────────────────────────────────────────────────────────────────────────
+
+const GLOBE_CSS = `
+  .gs-root {
+    --g-size: 130vw;
+    --g-y: 48vh;
+  }
+  @media (min-width: 640px)  { .gs-root { --g-size: 130vw; --g-y: 32vh; } }
+  @media (min-width: 768px)  { .gs-root { --g-size: 130vw; --g-y: 28vh; } }
+  @media (min-width: 1024px) { .gs-root { --g-size: 130vw; --g-y: 24vh; } }
+  @media (min-width: 1280px) { .gs-root { --g-size: 130vw; --g-y: 20vh; } }
+  @media (min-width: 1536px) { .gs-root { --g-size: 2000px; --g-y: 8vh; } }
+
+  @keyframes gs-rise {
+    from { opacity: 0; transform: translateY(calc(var(--g-y) + 60px)) scale(0.97); }
+    to   { opacity: 1; transform: translateY(var(--g-y)) scale(1); }
+  }
+
+  .gs-rise {
+    animation: gs-rise 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+`;
+
+function GlobeStage({
+  ready,
+  onReady,
+  hexPolygons,
+}: {
+  ready: boolean;
+  onReady: () => void;
+  hexPolygons: EarthHexPolygon[];
+}) {
+  return (
+    <>
+      <style>{GLOBE_CSS}</style>
+      <div
+        className="gs-root pointer-events-none absolute inset-0 z-10 flex justify-center"
+        aria-hidden
+      >
+        <div
+          className={ready ? "gs-rise" : ""}
+          style={{
+            width: "var(--g-size)",
+            height: "var(--g-size)",
+            flexShrink: 0,
+            opacity: ready ? undefined : 0,
+            willChange: "transform, opacity",
+            contain: "layout style paint",
+          }}
+        >
+          <div className="pointer-events-auto h-full w-full">
+            <Earth
+              arcs={ARC_DATA}
+              rings={RING_DATA}
+              hexPolygons={hexPolygons}
+              config={EARTH_PRESETS.blueMarble}
+              onReady={onReady}
+              className="h-full w-full"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
-/* ── Copy ──────────────────────────────────────────────────────── */
+// ─────────────────────────────────────────────────────────────────────────────
+// BACKGROUND
+// ─────────────────────────────────────────────────────────────────────────────
 
-const SUB_COPY =
-  "We design, develop, and launch websites, mobile apps, dashboards, and automation systems that improve operations, build trust, and generate qualified leads."
+function HeroBackground() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      style={{ contain: "strict" }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 70% at 50% 40%, #141414 0%, #0c0c0c 50%, var(--hero-bg) 100%)",
+        }}
+      />
 
-/* ── Component ────────────────────────────────────────────────────── */
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1"/></svg>',
+          )}")`,
+          maskImage:
+            "radial-gradient(ellipse 75% 70% at 50% 45%, black 0%, rgba(0,0,0,0.60) 60%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 75% 70% at 50% 45%, black 0%, rgba(0,0,0,0.60) 60%, transparent 100%)",
+        }}
+      />
+
+      <div
+        className="absolute left-1/2 top-[15%] -translate-x-1/2"
+        style={{
+          width: "min(900px, 80vw)",
+          height: "min(500px, 45vh)",
+          background:
+            "radial-gradient(ellipse at center, var(--hero-glow-a) 0%, transparent 70%)",
+          opacity: 0.9,
+        }}
+      />
+
+      <div
+        className="absolute bottom-[20%] right-[10%] size-[180px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, var(--hero-glow-b) 0%, transparent 70%)",
+          opacity: 0.6,
+        }}
+      />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CTA BUTTONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function CtaButtons({ delay = 0 }: { delay?: number }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={delay}
+      initial="hidden"
+      animate="show"
+      className="mt-10 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:gap-4"
+    >
+      <Link
+        href="#get-started"
+        className="
+          group relative inline-flex h-12 w-full items-center justify-center
+          gap-2 rounded-full bg-[var(--brand)] px-7 text-[14px] font-semibold
+          text-white transition-[transform,background-color] duration-300
+          hover:scale-[1.02] sm:w-auto
+        "
+      >
+        Book a Schedule
+        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+      </Link>
+
+      <Link
+        href="#demo"
+        className="
+          group inline-flex h-12 w-full items-center justify-center gap-2
+          rounded-full border border-[var(--border-strong)] px-7 text-[14px]
+          font-medium text-white transition-[transform,border-color] duration-300
+          hover:scale-[1.02] hover:border-[var(--brand-border)] sm:w-auto
+        "
+        style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+      >
+        More Projects
+        <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      </Link>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATS BAND
+// ─────────────────────────────────────────────────────────────────────────────
+
+function StatsBand() {
+  return (
+    <Container wide className="py-10 md:py-14">
+      <motion.div
+        variants={statContainer}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4 md:gap-x-8"
+      >
+        {stats.map((s) => (
+          <motion.div
+            key={s.label}
+            variants={statItem}
+            className="flex flex-col items-center text-center"
+          >
+            <p className="font-heading text-[28px] font-semibold leading-none text-[var(--text)] sm:text-[36px] md:text-[44px]">
+              <AnimatedCounter value={s.value} duration={1800} />
+            </p>
+            <p className="mt-3 text-[9px] font-medium uppercase tracking-[0.24em] text-[var(--text-subtle)] sm:text-[11px]">
+              {s.label}
+            </p>
+          </motion.div>
+        ))}
+      </motion.div>
+    </Container>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HERO CONTENT
+//
+// Single component containing headline → subtitle → CTAs → stats.
+// All animation delays cascade from mount time so ordering is guaranteed.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function HeroContent() {
+  return (
+    <div className="flex min-h-[100svh] w-full flex-col items-center justify-between px-5 pb-10 pt-28 sm:px-8 sm:pt-32 md:pt-36 lg:pt-40">
+      {/* Headline + Subtitle + CTAs */}
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
+        <SplitWords
+          text="Custom Software, Websites, Mobile Apps & AI Solutions for Growing Businesses."
+          as="h1"
+          delay={0.05}
+          stagger={0.04}
+          once
+          className="
+            font-sans text-left sm:text-center font-bold leading-[1.08]
+            tracking-[-0.025em] text-[var(--text)]
+            text-[28px] xs:text-[34px] sm:text-[46px]
+            md:text-[56px] lg:text-[60px] xl:text-[64px]
+          "
+        />
+
+        <LineSweepReveal
+          text="Leaflet Digital Solutions is a remote-first software development company helping businesses, startups, and agencies build reliable digital products—from websites and mobile apps to custom software systems and AI-powered automation."
+          as="p"
+          delay={0.5}
+          stagger={0.02}
+          duration={0.3}
+          from="left"
+          once
+          amount={0}
+          className="
+            mx-auto text-left sm:text-center mt-4 max-w-[680px] font-medium text-balance text-white
+            text-[14px] leading-[1.65] text-[var(--text-muted)]
+            sm:text-[15px] sm:leading-[1.7]
+            md:text-[18px] md:leading-[1.75]
+          "
+        />
+
+        <CtaButtons delay={0.85} />
+      </div>
+
+      {/* Stats — cascades after CTAs via delayChildren: 1.2s */}
+      <div className="relative z-10 w-full">
+        <StatsBand />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HERO SECTION (root)
+//
+// Sequence:
+//   1. Globe mounts immediately and starts loading
+//   2. Globe fires onReady (or 3s fallback)
+//   3. globeReady → globe CSS rise animation plays
+//   4. 150ms later → HeroContent mounts (all animations cascade from there)
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function HeroSection() {
+  const [globeReady, setGlobeReady] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const hexPolygons = useMemo(
+    () => (countriesData as { features: EarthHexPolygon[] }).features,
+    [],
+  );
+
+  const handleGlobeReady = useCallback(() => {
+    setGlobeReady(true);
+  }, []);
+
+  // Show content 150ms after globe is ready (one paint frame buffer)
+  useEffect(() => {
+    if (!globeReady) return;
+    const id = setTimeout(() => setShowContent(true), 150);
+    timersRef.current.push(id);
+    return () => clearTimeout(id);
+  }, [globeReady]);
+
+  // Hard fallback — never block content longer than 3s
+  useEffect(() => {
+    const id = setTimeout(() => setGlobeReady(true), 3000);
+    timersRef.current.push(id);
+    return () => {
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
+    };
+  }, []);
+
   return (
     <section
       id="home"
-      className="relative isolate overflow-hidden bg-[#080706]"
+      className="relative isolate w-full overflow-hidden text-white"
+      style={{ backgroundColor: "var(--hero-bg)", contain: "paint" }}
     >
-      {/* ── Background ──────────────────────────────────────────── */}
-      <div aria-hidden className="absolute inset-0 z-0">
-        <InteractiveDots
-          gap={14}
-          dotRadius={0.72}
-          lightRadius={180}
-          baseOpacity={0.1}
-          maxOpacity={0.9}
-          className="opacity-90"
+      <div className="relative min-h-[100svh] w-full">
+        <HeroBackground />
+
+        <GlobeStage
+          ready={globeReady}
+          onReady={handleGlobeReady}
+          hexPolygons={hexPolygons}
         />
-        {/* <div className="absolute inset-0 bg-[linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.16)_12%,rgba(8,7,6,0.03)_34%,rgba(8,7,6,0.08)_72%,#080706_100%)]" /> */}
-      </div>
 
-      <div className="relative z-10 flex min-h-dvh flex-col">
-        {/* ── Main content ─────────────────────────────────────── */}
-        <Container
-          wide
-          className="flex flex-1 flex-col items-center justify-center pt-20 sm:pt-24 md:pt-28"
-        >
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="mx-auto flex w-full max-w-[1080px] flex-col items-center text-center"
-          >
-            {/* ── Eyebrow ─────────────────────────────────────── */}
-            <motion.span
-              variants={eyebrowV}
-              className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-medium text-[12px] uppercase tracking-[0.24em] text-white/60 sm:mb-7 sm:text-[11px]"
-            >
-              Leaflet Digital Solutions
-            </motion.span>
+        {/* Bottom blend into next section */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-52 sm:h-64"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 0%, rgba(11,11,11,0.6) 45%, var(--background) 100%)",
+          }}
+        />
 
-            {/* ── Headline ────────────────────────────────────── */}
-            <motion.div variants={item}>
-              <SplitWords
-                text="Digital systems built to convert, scale, and simplify growth."
-                as="h1"
-                className={cn(
-                  "text-balance font-heading font-bold uppercase tracking-tight text-[#f8f1ea]",
-                  /* Sizing — much more refined now */
-                  "text-[28px] leading-[1.08]",
-                  "sm:text-[40px] sm:leading-[1.06]",
-                  "md:text-[52px]",
-                  "lg:text-[64px]",
-                  "xl:text-[72px]"
-                )}
-                delay={0.1}
-                stagger={0.035}
-              />
-            </motion.div>
-
-            {/* ── Sub-copy ─────────────────────────────────────── */}
-            <motion.div
-              variants={item}
-              className="mt-5 w-full max-w-[680px] sm:mt-6 md:mt-7"
-            >
-              <LineSweepReveal
-                text={SUB_COPY}
-                from="left"
-                delay={0.3}
-                stagger={0.022}
-                duration={0.3}
-                className={cn(
-                  "text-pretty text-[14px] font-normal leading-[1.65] text-white/55",
-                  "sm:text-[15px] sm:leading-[1.7]",
-                  "md:text-[16px] md:leading-[1.7]"
-                )}
-              />
-            </motion.div>
-
-            {/* ── CTA buttons ──────────────────────────────────── */}
-            <motion.div
-              variants={buttonRow}
-              className="mt-8 flex w-full flex-col items-stretch gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:items-center sm:gap-4"
-            >
-              <motion.div variants={buttonItem}>
-                <Link
-                  href="/contact"
-                  className={cn(
-                    buttonVariants({ variant: "orange", size: "lg" }),
-                    "group h-11 w-full px-6 text-[13px] sm:h-12 sm:w-auto sm:min-w-[210px] sm:text-[14px]"
-                  )}
-                >
-                  Book a free consultation
-                  <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-              </motion.div>
-
-              <motion.div variants={buttonItem}>
-                <Link
-                  href="/work"
-                  className={cn(
-                    buttonVariants({ variant: "outlineDark", size: "lg" }),
-                    "group h-11 w-full border-white/[0.18] bg-transparent px-6 text-[13px] text-white/75",
-                    "hover:border-white/[0.32] hover:bg-white/[0.04]",
-                    "sm:h-12 sm:w-auto sm:min-w-[150px] sm:text-[14px]"
-                  )}
-                >
-                  See our work
-                  <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </Container>
-
-        {/* ── Logo strip ───────────────────────────────────────── */}
-        <motion.div
-          variants={logoStrip}
-          initial="hidden"
-          animate="show"
-          className="w-full pb-12 sm:pb-16 md:pb-24"
-        >
-          <Container wide>
-            <p className="text-center font-medium text-[9px] uppercase tracking-[0.26em] text-white/25 sm:text-[12px]">
-              Trusted by teams shipping at scale
-            </p>
-            <InfiniteLogoStrip
-              logos={logos}
-              className="mt-5 text-white/40 sm:mt-6"
-              size="sm"
-            />
-          </Container>
-        </motion.div>
-      </div>
-
-      {/* ── Stats strip ──────────────────────────────────────────── */}
-      <div className="relative z-10 border-t border-white/[0.06]">
-        <Container wide className="py-10 md:py-12">
-          <motion.div
-            variants={statsGrid}
-            initial="hidden"
-            whileInView="show"
-            viewport={viewport.section}
-            className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 md:gap-x-8"
-          >
-            {stats.map((s) => (
-              <motion.div
-                key={s.label}
-                variants={statItem}
-                className="flex flex-col items-center text-center"
-              >
-                <p className="font-heading text-[28px] font-semibold leading-none text-white sm:text-[34px] md:text-[42px]">
-                  <AnimatedCounter value={s.value} duration={1800} />
-                </p>
-                <p className="mt-3 font-medium text-[9px] uppercase tracking-[0.24em] text-white/35 sm:mt-4 sm:text-[12px]">
-                  {s.label}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </Container>
+        {/* Content overlay — mounts only after globe is ready */}
+        {showContent && (
+          <div className="relative z-30">
+            <HeroContent />
+          </div>
+        )}
       </div>
     </section>
-  )
+  );
 }
+
+export default HeroSection;

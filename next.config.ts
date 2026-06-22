@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  transpilePackages: ["three-globe", "three"],
   images: {
     remotePatterns: [
       // Unsplash — used for office photos on the contact page
@@ -26,11 +27,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.pexels.com",
-      }
-
+      },
     ],
   },
-  allowedDevOrigins: ['192.168.100.197'],
+  allowedDevOrigins: ["192.168.100.197", "192.168.100.52"],
 };
 
 export default nextConfig;

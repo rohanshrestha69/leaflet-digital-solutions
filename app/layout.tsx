@@ -1,13 +1,13 @@
-import type { Metadata } from "next"
-import localFont from "next/font/local"
+import type { Metadata } from "next";
+import localFont from "next/font/local";
 
-import "./globals.css"
+import "./globals.css";
 
-import { cn } from "@/lib/utils"
-import { MotionProvider } from "@/components/animations/motion-provider"
-import { SiteFooter } from "@/components/layout/site-footer"
-import { SiteHeader } from "@/components/layout/site-header"
-import { GoToTop } from "@/components/layout/go-to-top"
+import { cn } from "@/lib/utils";
+import { MotionProvider } from "@/components/animations/motion-provider";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
+import { GoToTop } from "@/components/layout/go-to-top";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Fonts                                   */
@@ -34,7 +34,7 @@ const satoshi = localFont({
   preload: true,
 
   fallback: ["system-ui", "sans-serif"],
-})
+});
 
 /* -------------------------------------------------------------------------- */
 /*                                  Metadata                                  */
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 
   description:
     "Leaflet Digital Solutions helps businesses design, develop, and launch websites, mobile apps, dashboards, automation tools, and digital growth systems that improve operations, build trust, and generate qualified leads.",
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Layout                                    */
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html
@@ -69,29 +69,22 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(
         "h-full",
-        "scroll-smooth",
         "text-white",
         "antialiased",
         "[text-rendering:optimizeLegibility]",
         "[font-synthesis:none]",
         satoshi.variable,
-        "font-sans"
+        "font-sans",
       )}
     >
       <body
-        className={cn(
-          "min-h-full",
-          "overflow-x-clip",
-          "text-[var(--text)]"
-        )}
+        className={cn("min-h-full", "overflow-x-clip", "text-[var(--text)]")}
       >
         <MotionProvider>
           <div className="relative isolate">
             <SiteHeader />
 
-            <main className="relative z-10">
-              {children}
-            </main>
+            <main className="relative z-10">{children}</main>
 
             <SiteFooter />
 
@@ -100,6 +93,5 @@ export default function RootLayout({
         </MotionProvider>
       </body>
     </html>
-  )
+  );
 }
-

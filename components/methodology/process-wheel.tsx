@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import type { CSSProperties, KeyboardEvent } from "react"
-import { useMemo } from "react"
-import { AnimatePresence, motion, type Variants } from "motion/react"
+import type { CSSProperties, KeyboardEvent } from "react";
+import { useMemo } from "react";
+import { AnimatePresence, motion, type Variants } from "motion/react";
 
-import type { ProcessStep } from "@/features/marketing/types"
-import { premiumEase } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import type { ProcessStep } from "@/features/marketing/types";
+import { premiumEase } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Props                                   */
 /* -------------------------------------------------------------------------- */
 
 type ProcessWheelProps = {
-  steps: ProcessStep[]
-  activeIndex: number
-  rotationAngle: number
-  onSelect: (index: number) => void
-}
+  steps: ProcessStep[];
+  activeIndex: number;
+  rotationAngle: number;
+  onSelect: (index: number) => void;
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Geometry                                  */
 /* -------------------------------------------------------------------------- */
 
-const SIZE = 600
-const CENTER = SIZE / 2
-const OUTER_R = 288
-const INNER_R = 178
-const GAP_DEG = 2.4
-const MID_R = (OUTER_R + INNER_R) / 2
-const CHEVRON_DEG = 7
+const SIZE = 600;
+const CENTER = SIZE / 2;
+const OUTER_R = 288;
+const INNER_R = 178;
+const GAP_DEG = 2.4;
+const MID_R = (OUTER_R + INNER_R) / 2;
+const CHEVRON_DEG = 7;
 
 function round(value: number) {
-  return Math.round(value * 1000) / 1000
+  return Math.round(value * 1000) / 1000;
 }
 
 function polar(angleDeg: number, radius: number) {
-  const angle = ((angleDeg - 90) * Math.PI) / 180
+  const angle = ((angleDeg - 90) * Math.PI) / 180;
   return {
     x: round(CENTER + radius * Math.cos(angle)),
     y: round(CENTER + radius * Math.sin(angle)),
-  }
+  };
 }
 
 function segmentPath(startDeg: number, endDeg: number) {
-  const outerStart = polar(startDeg, OUTER_R)
-  const outerEnd = polar(endDeg, OUTER_R)
-  const innerEnd = polar(endDeg, INNER_R)
-  const innerStart = polar(startDeg, INNER_R)
-  const tipEnd = polar(endDeg + CHEVRON_DEG, MID_R)
-  const tipStart = polar(startDeg + CHEVRON_DEG, MID_R)
-  const largeArc = endDeg - startDeg > 180 ? 1 : 0
+  const outerStart = polar(startDeg, OUTER_R);
+  const outerEnd = polar(endDeg, OUTER_R);
+  const innerEnd = polar(endDeg, INNER_R);
+  const innerStart = polar(startDeg, INNER_R);
+  const tipEnd = polar(endDeg + CHEVRON_DEG, MID_R);
+  const tipStart = polar(startDeg + CHEVRON_DEG, MID_R);
+  const largeArc = endDeg - startDeg > 180 ? 1 : 0;
 
   return [
     `M ${outerStart.x} ${outerStart.y}`,
@@ -60,14 +60,14 @@ function segmentPath(startDeg: number, endDeg: number) {
     `A ${INNER_R} ${INNER_R} 0 ${largeArc} 0 ${innerStart.x} ${innerStart.y}`,
     `L ${tipStart.x} ${tipStart.y}`,
     "Z",
-  ].join(" ")
+  ].join(" ");
 }
 
 function labelArcPath(startDeg: number, endDeg: number) {
-  const start = polar(startDeg, MID_R)
-  const end = polar(endDeg, MID_R)
-  const largeArc = endDeg - startDeg > 180 ? 1 : 0
-  return `M ${start.x} ${start.y} A ${MID_R} ${MID_R} 0 ${largeArc} 1 ${end.x} ${end.y}`
+  const start = polar(startDeg, MID_R);
+  const end = polar(endDeg, MID_R);
+  const largeArc = endDeg - startDeg > 180 ? 1 : 0;
+  return `M ${start.x} ${start.y} A ${MID_R} ${MID_R} 0 ${largeArc} 1 ${end.x} ${end.y}`;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -81,7 +81,7 @@ const centerContainer: Variants = {
     transition: { staggerChildren: 0.05, delayChildren: 0.05 },
   },
   exit: { opacity: 0, transition: { duration: 0.15, ease: premiumEase } },
-}
+};
 
 const centerItem: Variants = {
   hidden: { opacity: 0, y: 8 },
@@ -95,7 +95,7 @@ const centerItem: Variants = {
     y: -4,
     transition: { duration: 0.12, ease: premiumEase },
   },
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
@@ -107,37 +107,37 @@ export function ProcessWheel({
   rotationAngle,
   onSelect,
 }: ProcessWheelProps) {
-  const count = Math.max(steps.length, 1)
-  const stepSize = 360 / count
-  const active = steps[activeIndex] ?? steps[0]
+  const count = Math.max(steps.length, 1);
+  const stepSize = 360 / count;
+  const active = steps[activeIndex] ?? steps[0];
 
   const segments = useMemo(
     () =>
       steps.map((step, index) => {
-        const start = index * stepSize + GAP_DEG / 2
-        const end = (index + 1) * stepSize - GAP_DEG / 2
+        const start = index * stepSize + GAP_DEG / 2;
+        const end = (index + 1) * stepSize - GAP_DEG / 2;
         return {
           step,
           index,
           d: segmentPath(start, end),
           labelPath: labelArcPath(start, end),
           labelId: `wheel-label-${step.id}`,
-        }
+        };
       }),
-    [steps, stepSize]
-  )
+    [steps, stepSize],
+  );
 
-  if (!active) return null
+  if (!active) return null;
 
   function handleKeyDown(event: KeyboardEvent<SVGGElement>, index: number) {
     if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault()
-      onSelect(index)
+      event.preventDefault();
+      onSelect(index);
     }
   }
 
   return (
-    <div className="relative aspect-square w-full max-w-[320px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px]">
+    <div className="relative aspect-square w-full max-w-[350px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px]">
       {/* Ambient glow */}
       <div
         aria-hidden
@@ -172,7 +172,7 @@ export function ProcessWheel({
           }
         >
           {segments.map((segment) => {
-            const isActive = segment.index === activeIndex
+            const isActive = segment.index === activeIndex;
 
             return (
               <g
@@ -191,7 +191,7 @@ export function ProcessWheel({
                     "transition-all duration-500 ease-[var(--ease-premium)]",
                     isActive
                       ? "fill-[var(--brand)] stroke-[var(--brand)]"
-                      : "fill-transparent stroke-[var(--border)] group-hover:fill-white/[0.04] group-hover:stroke-[var(--border-strong)]"
+                      : "fill-transparent stroke-[var(--border)] group-hover:fill-white/[0.04] group-hover:stroke-[var(--border-strong)]",
                   )}
                   strokeWidth={1}
                 />
@@ -201,20 +201,20 @@ export function ProcessWheel({
                     "pointer-events-none select-none font-heading font-semibold tracking-wide transition-all duration-500 ease-[var(--ease-premium)]",
                     isActive
                       ? "fill-[var(--primary-foreground)]"
-                      : "fill-[var(--text-muted)]"
+                      : "fill-[var(--text-muted)]",
                   )}
                   style={{ fontSize: isActive ? 21 : 17 }}
                 >
                   <textPath
                     href={`#${segment.labelId}`}
-                    startOffset="50%"
+                    startOffset="55%"
                     style={{ textAnchor: "middle" }}
                   >
                     {segment.step.label}
                   </textPath>
                 </text>
               </g>
-            )
+            );
           })}
         </g>
 
@@ -271,5 +271,5 @@ export function ProcessWheel({
         </div>
       </div>
     </div>
-  )
+  );
 }

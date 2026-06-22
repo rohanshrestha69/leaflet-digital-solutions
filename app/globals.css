@@ -2,15 +2,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* -------------------------------------------------------------------------- */
-/*                                   Variants                                 */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Variants                                                           */
+/* ================================================================== */
 
 @custom-variant dark (&:is(.dark *));
 
-/* -------------------------------------------------------------------------- */
-/*                                   Theme                                    */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Theme bridge — maps CSS vars into Tailwind tokens                  */
+/* ================================================================== */
 
 @theme inline {
   --color-background: var(--background);
@@ -19,28 +19,20 @@
   --font-sans: var(--font-satoshi);
   --font-heading: var(--font-satoshi);
 
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-
-  --color-sidebar-accent-foreground:
-    var(--sidebar-accent-foreground);
-
-  --color-sidebar-accent: var(--sidebar-accent);
-
-  --color-sidebar-primary-foreground:
-    var(--sidebar-primary-foreground);
-
-  --color-sidebar-primary: var(--sidebar-primary);
-
-  --color-sidebar-foreground: var(--sidebar-foreground);
-
   --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -48,31 +40,18 @@
 
   --color-destructive: var(--destructive);
 
-  --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
-
-  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
   --color-muted: var(--muted);
-
-  --color-secondary-foreground:
-    var(--secondary-foreground);
-
+  --color-muted-foreground: var(--muted-foreground);
   --color-secondary: var(--secondary);
-
-  --color-primary-foreground:
-    var(--primary-foreground);
-
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-primary: var(--primary);
-
-  --color-popover-foreground:
-    var(--popover-foreground);
-
+  --color-primary-foreground: var(--primary-foreground);
   --color-popover: var(--popover);
-
-  --color-card-foreground:
-    var(--card-foreground);
-
+  --color-popover-foreground: var(--popover-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -89,13 +68,14 @@
   --animate-fifth: moveVertical 38s ease-in-out infinite;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Root                                      */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Design tokens                                                      */
+/* ================================================================== */
 
 :root {
   color-scheme: dark;
 
+  /* Surfaces */
   --background: #0b0b0b;
   --background-deep: #080808;
   --background-soft: #101010;
@@ -110,9 +90,17 @@
   --popover: #ffffff;
   --popover-foreground: #0f0f0f;
 
+  /* Brand */
   --primary: #f88221;
   --primary-foreground: #ffffff;
 
+  --brand: #f88221;
+  --brand-hover: #e97012;
+  --brand-soft: rgba(248, 130, 33, 0.12);
+  --brand-border: rgba(248, 130, 33, 0.35);
+  --brand-glow: rgba(248, 130, 33, 0.24);
+
+  /* Neutrals */
   --secondary: #181818;
   --secondary-foreground: #f4f4f4;
 
@@ -124,57 +112,77 @@
 
   --destructive: oklch(0.577 0.245 27.325);
 
+  /* Borders & inputs */
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
-
   --input: rgba(255, 255, 255, 0.12);
-
   --ring: rgba(248, 130, 33, 0.55);
 
+  /* Text scale */
   --text: #f4f4f4;
   --text-soft: #d4d4d4;
   --text-muted: #9b9b9b;
   --text-subtle: #6f6f6f;
 
-  --brand: #f88221;
-  --brand-hover: #e97012;
+  /* Easings */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --brand-soft: rgba(248, 130, 33, 0.12);
-
-  --brand-border: rgba(248, 130, 33, 0.35);
-
-  --brand-glow: rgba(248, 130, 33, 0.24);
-
-  --ease-premium:   cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out:    cubic-bezier(0.76, 0, 0.24, 1);
-  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
-
+  /* Charts */
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
+  /* Radius base */
   --radius: 1rem;
 
+  /* Sidebar */
   --sidebar: #151515;
   --sidebar-foreground: #f4f4f4;
-
   --sidebar-primary: #f88221;
   --sidebar-primary-foreground: #ffffff;
-
   --sidebar-accent: #202020;
   --sidebar-accent-foreground: #f4f4f4;
-
   --sidebar-border: rgba(255, 255, 255, 0.08);
-
   --sidebar-ring: rgba(248, 130, 33, 0.55);
+
+  /* ─── Illustration Palette ─────────────────────── */
+  /* Surface tones used inside SVG illustrations */
+  --illu-surface: #ffffff;
+  --illu-surface-2: rgba(255, 255, 255, 0.55);
+  --illu-surface-3: rgba(255, 255, 255, 0.28);
+  --illu-surface-4: rgba(255, 255, 255, 0.14);
+
+  /* Ink (text/lines inside white surfaces) */
+  --illu-ink-1: #1a1a1a;
+  --illu-ink-2: #4a4a4a;
+  --illu-ink-3: #d4d4d4;
+  --illu-ink-4: #ededed;
+
+  /* Brand accent (matches --brand) */
+  --illu-accent: #f88221;
+  --illu-accent-soft: rgba(248, 130, 33, 0.18);
+  --illu-accent-strong: #e97012;
+
+  /* Semantic accents (for status dots, badges) */
+  --illu-success: #4ade80;
+  --illu-warning: #fbbf24;
+  --illu-danger: #f87171;
+  --illu-info: #60a5fa;
+
+  /* Illustration backdrop options (apply on container) */
+  --illu-bg-dark: #131313;
+  --illu-bg-brand: #f88221;
+  --illu-bg-muted: #1d1d1d;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Base                                      */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Base                                                               */
+/* ================================================================== */
 
 @layer base {
   * {
@@ -189,28 +197,18 @@
 
   html {
     @apply font-sans;
-
-    scroll-behavior: smooth;
     scroll-padding-top: 120px;
-
     overflow-x: clip;
-
     text-rendering: optimizeLegibility;
-
     -webkit-font-smoothing: antialiased;
-
     -moz-osx-font-smoothing: grayscale;
-
     font-synthesis: none;
   }
 
   body {
     @apply bg-background text-foreground;
-
     overflow-x: hidden;
-
     min-height: 100vh;
-
     text-rendering: optimizeLegibility;
   }
 
@@ -228,17 +226,28 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                            GPU Optimization                                */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Utilities                                                          */
+/* ================================================================== */
+
+@layer utilities {
+  .duration-250 {
+    transition-duration: 250ms;
+  }
+
+  .duration-400 {
+    transition-duration: 400ms;
+  }
+}
+
+/* ================================================================== */
+/*  GPU optimization helpers                                           */
+/* ================================================================== */
 
 .gpu {
   transform: translateZ(0);
-
   backface-visibility: hidden;
-
   perspective: 1000px;
-
   will-change: transform, opacity;
 }
 
@@ -246,216 +255,142 @@
   contain: layout style paint;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                Glass Noise                                 */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Glass noise                                                        */
+/* ================================================================== */
 
 .glass-noise::after {
   content: "";
-
   position: absolute;
-
   inset: 0;
-
   opacity: 0.03;
-
   pointer-events: none;
-
-  background-image:
-    radial-gradient(
-      rgba(255, 255, 255, 0.4) 0.5px,
-      transparent 0.5px
-    );
-
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.4) 0.5px,
+    transparent 0.5px
+  );
   background-size: 4px 4px;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Logo Marquee                                  */
-/* -------------------------------------------------------------------------- */
-
-@keyframes logo-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+@keyframes marquee {
+  to {
+    transform: translate3d(-25%, 0, 0);
+  }
 }
 
-.logo-marquee-track {
-  animation: logo-marquee var(--logo-marquee-duration, 30s)
-             var(--logo-marquee-direction, normal)
-             linear infinite;
+@keyframes marquee-reverse {
+  to {
+    transform: translate3d(25%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
   will-change: transform;
 }
 
-/* -------------------------------------------------------------------------- */
-/* ── Process wheel rotation ─────────────────────────────────────── */
-/* -------------------------------------------------------------------------- */
-
-@keyframes wheel-rotate {
-  to { transform: rotate(var(--wheel-rotation, 0deg)); }
+.animate-marquee-reverse {
+  animation: marquee-reverse linear infinite;
+  will-change: transform;
 }
+
+/* ================================================================== */
+/*  Process wheel                                                      */
+/* ================================================================== */
 
 .process-wheel-rotate {
-  transform-origin: 300px 300px; /* SVG center = SIZE/2 */
-  transform: rotate(var(--wheel-rotation, 0deg));
-  transition: transform 0.75s cubic-bezier(0.76, 0, 0.24, 1);
+  transform: rotate(var(--wheel-rotation, 0deg)) translateZ(0);
+  transform-origin: center;
+  transition: transform 700ms var(--ease-premium);
   will-change: transform;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                Hero Clouds                                 */
-/* -------------------------------------------------------------------------- */
+.process-center-reveal {
+  animation: process-center-reveal 260ms var(--ease-premium);
+}
+
+@keyframes process-center-reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ================================================================== */
+/*  Hero clouds                                                        */
+/* ================================================================== */
 
 .hero-cloud {
   opacity: 0.62;
-
   mix-blend-mode: normal;
-
   will-change: transform, opacity;
-
   contain: layout paint;
-
   transform: translateZ(0);
 }
 
 .hero-cloud-left {
-  animation:
-    hero-cloud-left
-    34s
-    var(--ease-premium)
-    infinite
-    alternate;
+  animation: hero-cloud-left 34s var(--ease-premium) infinite alternate;
 }
 
 .hero-cloud-right {
-  animation:
-    hero-cloud-right
-    38s
-    var(--ease-premium)
-    infinite
-    alternate;
+  animation: hero-cloud-right 38s var(--ease-premium) infinite alternate;
 }
 
 @keyframes hero-cloud-left {
   0% {
-    transform:
-      translate3d(-2%, 1%, 0)
-      scale(1);
-
+    transform: translate3d(-2%, 1%, 0) scale(1);
     opacity: 0.62;
   }
-
   50% {
-    transform:
-      translate3d(5%, -1%, 0)
-      scale(1.08);
-
+    transform: translate3d(5%, -1%, 0) scale(1.08);
     opacity: 0.85;
   }
-
   100% {
-    transform:
-      translate3d(7%, 2%, 0)
-      scale(1.08);
-
+    transform: translate3d(7%, 2%, 0) scale(1.08);
     opacity: 0.72;
   }
 }
 
 @keyframes hero-cloud-right {
   0% {
-    transform:
-      translate3d(2%, -1%, 0)
-      scale(1);
-
+    transform: translate3d(2%, -1%, 0) scale(1);
     opacity: 0.6;
   }
-
   50% {
-    transform:
-      translate3d(-5%, 1%, 0)
-      scale(1.08);
-
+    transform: translate3d(-5%, 1%, 0) scale(1.08);
     opacity: 0.82;
   }
-
   100% {
-    transform:
-      translate3d(-7%, -2%, 0)
-      scale(1.08);
-
+    transform: translate3d(-7%, -2%, 0) scale(1.08);
     opacity: 0.68;
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                             Process Section                                */
-/* -------------------------------------------------------------------------- */
-
-.process-wheel-rotate {
-  transform:
-    rotate(var(--wheel-rotation))
-    translateZ(0);
-
-  transform-origin: center;
-
-  transition:
-    transform
-    700ms
-    var(--ease-premium);
-
-  will-change: transform;
-}
-
-.process-center-reveal {
-  animation:
-    process-center-reveal
-    260ms
-    var(--ease-premium);
-}
-
-@keyframes process-center-reveal {
-  from {
-    opacity: 0;
-
-    transform:
-      translate3d(0, 6px, 0);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translate3d(0, 0, 0);
-  }
-}
-
-/* -------------------------------------------------------------------------- */
-/*                               Spin Slow                                    */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Spin slow (Go-to-top button rotating text)                         */
+/* ================================================================== */
 
 @keyframes spin-slow {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
 }
 
 .animate-spin-slow {
-  animation:
-    spin-slow
-    20s
-    linear
-    infinite;
-
+  animation: spin-slow 20s linear infinite;
   will-change: transform;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Bento Fixes                                   */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Bento grid row spans                                               */
+/* ================================================================== */
 
 .row-span-2 {
   grid-row: span 2 / span 2;
@@ -473,44 +408,59 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               Scrollbar                                    */
-/* -------------------------------------------------------------------------- */
+/* ================================================================== */
+/*  Scrollbar                                                          */
+/* ================================================================== */
 
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b0b0b;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
-
   border-radius: 999px;
+  transition: background-color 200ms var(--ease-premium);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(248, 130, 33, 0.32);
+  background: var(--brand-soft);
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           Reduced Motion                                   */
-/* -------------------------------------------------------------------------- */
+.hero-readability-mask {
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 45%,
+    rgba(2, 3, 8, 0.55) 0%,
+    rgba(2, 3, 8, 0.2) 50%,
+    transparent 80%
+  );
+}
+
+/* ================================================================== */
+/*  Reduced motion                                                     */
+/* ================================================================== */
 
 /* @media (prefers-reduced-motion: reduce) {
-  .logo-marquee-track  { animation: none; }
-  .process-wheel-rotate { transition: none; }
-  .gtt-rotating        { animation: none; }
+  .logo-marquee-track,
+  .hero-cloud-left,
+  .hero-cloud-right,
+  .animate-spin-slow {
+    animation: none !important;
+  }
+
+  .process-wheel-rotate {
+    transition: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 } */
-
-
-@layer utilities {
-  .duration-250 {
-    transition-duration: 250ms;
-  }
-  .duration-400 {
-    transition-duration: 400ms;
-  }
-}

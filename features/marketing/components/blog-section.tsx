@@ -1,17 +1,18 @@
 // features/marketing/components/blog-section.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 
-import { buttonVariants } from "@/components/ui/button"
-import { Container } from "@/components/shared/container"
-import { SectionHeading } from "@/components/shared/section-heading"
-import { getLatestPosts } from "@/features/marketing/data/blog-data"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
-import { BlogCard } from "@/features/blog/components/blog-card"
+import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/shared/container";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { getLatestPosts } from "@/features/marketing/data/blog-data";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { BlogCard } from "@/features/blog/components/blog-card";
+import { SectionLabel } from "@/components/shared/section-label";
 
 /* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
@@ -20,7 +21,7 @@ import { BlogCard } from "@/features/blog/components/blog-card"
 const sectionV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.04 } },
-}
+};
 
 const headerV: Variants = {
   hidden: { opacity: 0, y: 22, filter: "blur(3px)" },
@@ -30,7 +31,7 @@ const headerV: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.7, ease: ease.out },
   },
-}
+};
 
 const featuredV: Variants = {
   hidden: { opacity: 0, y: 32, scale: 0.97, filter: "blur(4px)" },
@@ -41,12 +42,12 @@ const featuredV: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.75, ease: ease.out, delay: 0.1 },
   },
-}
+};
 
 const sideListV: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
-}
+};
 
 const sideCardV: Variants = {
   hidden: { opacity: 0, x: 18, filter: "blur(3px)" },
@@ -56,7 +57,7 @@ const sideCardV: Variants = {
     filter: "blur(0px)",
     transition: { duration: 0.55, ease: ease.out },
   },
-}
+};
 
 const dividerV: Variants = {
   hidden: { scaleX: 0 },
@@ -64,7 +65,7 @@ const dividerV: Variants = {
     scaleX: 1,
     transition: { duration: 0.6, ease: ease.inOut, delay: 0.05 },
   },
-}
+};
 
 const ctaV: Variants = {
   hidden: { opacity: 0, y: 16, scale: 0.95 },
@@ -74,17 +75,17 @@ const ctaV: Variants = {
     scale: 1,
     transition: { duration: 0.5, ease: ease.soft, delay: 0.1 },
   },
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
 /* -------------------------------------------------------------------------- */
 
 export function BlogSection() {
-  const posts = getLatestPosts(4)
-  const [featured, ...rest] = posts
+  const posts = getLatestPosts(4);
+  const [featured, ...rest] = posts;
 
-  if (!featured) return null
+  if (!featured) return null;
 
   return (
     <section
@@ -92,6 +93,9 @@ export function BlogSection() {
       className="relative bg-[var(--background)] py-20 md:py-28"
     >
       <Container wide>
+        <SectionLabel variant="line" className="mb-8 md:mb-10">
+          Blogs
+        </SectionLabel>
         <motion.div
           variants={sectionV}
           initial="hidden"
@@ -127,7 +131,7 @@ export function BlogSection() {
               className={cn(
                 "flex flex-col",
                 "border-t border-[var(--border)]",
-                "lg:col-span-5 lg:border-l lg:border-t-0 lg:pl-12"
+                "lg:col-span-5 lg:border-l lg:border-t-0 lg:pl-12",
               )}
             >
               {rest.map((post, index) => (
@@ -154,7 +158,7 @@ export function BlogSection() {
               href="/blog"
               className={cn(
                 buttonVariants({ variant: "outlineDark", size: "lg" }),
-                "gap-2"
+                "gap-2",
               )}
             >
               All articles
@@ -164,5 +168,5 @@ export function BlogSection() {
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

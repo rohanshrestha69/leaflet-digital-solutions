@@ -1,56 +1,58 @@
 // components/layout/site-footer.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import { motion, type Variants } from "motion/react"
+import Link from "next/link";
+import Image from "next/image";
+import { motion, type Variants } from "motion/react";
 
-import { Container } from "@/components/shared/container"
-import { TextHoverEffect } from "@/components/ui/text-hover-effect"
-import { footerColumns } from "@/features/marketing/data/footer-links"
-import { ease, viewport } from "@/lib/motion"
-import { cn } from "@/lib/utils"
+import { Container } from "@/components/shared/container";
+import { footerColumns } from "@/features/marketing/data/footer-links";
+import { ease, viewport } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
-const vp = viewport.section
+const vp = viewport.section;
 
 /* ── Variants ─────────────────────────────────────────────────────── */
 
-const bannerV: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.7, ease: ease.out } },
-}
+// const bannerV: Variants = {
+//   hidden: { opacity: 0, y: 24 },
+//   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: ease.out } },
+// };
 
 const gridV: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+};
 
 const columnV: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: ease.out } },
-}
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: ease.out } },
+};
 
 const bottomV: Variants = {
   hidden: { opacity: 0, y: 12 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out, delay: 0.2 } },
-}
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: ease.out, delay: 0.2 },
+  },
+};
 
 /* ── Component ────────────────────────────────────────────────────── */
 
 const LEGAL_LINKS = [
   { label: "Terms & Conditions", href: "/terms" },
-  { label: "Privacy Policy",     href: "/privacy" },
-  { label: "Cookies",            href: "/cookies" },
-]
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Cookies", href: "/cookies" },
+];
 
 export function SiteFooter() {
-  const year = new Date().getFullYear()
+  const year = new Date().getFullYear();
 
   return (
     <footer className="relative border-t border-[var(--border)] bg-[var(--background)]">
-
       {/* ── Hero text banner ─────────────────────────────────────── */}
-      <div className="border-b border-[var(--border)]">
+      {/* <div className="border-b border-[var(--border)]">
         <Container wide>
           <motion.div
             variants={bannerV}
@@ -64,7 +66,7 @@ export function SiteFooter() {
             </div>
           </motion.div>
         </Container>
-      </div>
+      </div> */}
 
       {/* ── Link grid ────────────────────────────────────────────── */}
       <Container wide className="py-16 md:py-20">
@@ -82,7 +84,13 @@ export function SiteFooter() {
               aria-label="Leaflet — Home"
               className="inline-flex items-center gap-2 font-heading font-bold tracking-wide text-[var(--text)] transition-opacity duration-200 hover:opacity-80"
             >
-              <Image src="/logo_white.svg" alt="" width={40} height={40} className="h-9 w-9 object-contain" />
+              <Image
+                src="/logo_white.svg"
+                alt=""
+                width={40}
+                height={40}
+                className="h-9 w-9 object-contain"
+              />
               <span className="text-[28px] tracking-wider">Leaflet</span>
             </Link>
 
@@ -99,7 +107,11 @@ export function SiteFooter() {
 
           {/* Link columns */}
           {footerColumns.map((col) => (
-            <motion.div key={col.title} variants={columnV} className="flex flex-col gap-5">
+            <motion.div
+              key={col.title}
+              variants={columnV}
+              className="flex flex-col gap-5"
+            >
               <h3 className="text-base font-semibold uppercase tracking-[0.22em] text-[var(--text-subtle)]">
                 {col.title}
               </h3>
@@ -140,7 +152,7 @@ export function SiteFooter() {
         </motion.div>
       </Container>
     </footer>
-  )
+  );
 }
 
 /* ── Footer link ──────────────────────────────────────────────────── */
@@ -148,21 +160,30 @@ export function SiteFooter() {
 function FooterLink({
   link,
 }: {
-  link: { label: string; href: string; external?: boolean }
+  link: { label: string; href: string; external?: boolean };
 }) {
   const cls = cn(
     "inline-flex items-center gap-1 text-[14px] text-[var(--text-muted)]",
     "transition-colors duration-200 ease-[var(--ease-premium)]",
     "hover:text-[var(--brand)] hover:translate-x-0.5",
     "transition-transform",
-  )
+  );
 
   if (link.external) {
     return (
-      <a href={link.href} target="_blank" rel="noopener noreferrer" className={cls}>
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cls}
+      >
         {link.label}
       </a>
-    )
+    );
   }
-  return <Link href={link.href} className={cls}>{link.label}</Link>
+  return (
+    <Link href={link.href} className={cls}>
+      {link.label}
+    </Link>
+  );
 }
